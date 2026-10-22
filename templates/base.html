@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% block title %}<title>CALORIE TRACKER – Mein Ernährungstagebuch</title>{% endblock %}
+  <meta name="description" content="Kalorienzähler als Schulprojekt mit Python, Flask und SQLite.">
+  <!-- Eigenes Logo als Symbol im Browser-Tab -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <!-- ======================================================
+       Ladebildschirm: großes Logo, das kleinerfliegt
+       ====================================================== -->
+  <div id="splash">
+    <img class="splash-logo" id="splash-logo" src="{{ url_for('static', filename='logo.png') }}" alt="">
+    <div class="splash-name">CALORIE <span>TRACKER</span></div>
+  </div>
+
+  <!-- ======================================================
+       Benachrichtigungen (Meldungen von Python/Flask)
+       ====================================================== -->
+  <div id="toast-area" aria-live="polite">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="toast toast-{{ category }}">
+          <span class="toast-icon">{% if category == 'success' %}✓{% else %}!{% endif %}</span>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  <!-- ======================================================
+       Kopfbereich: Logo + Navigation (auf allen Seiten gleich)
+       ====================================================== -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="brand-mark">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo des Calorie Trackers">
+        </span>
+        <span class="brand-name">CALORIE <span>TRACKER</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="{{ url_for('index') }}"
+           class="{{ 'active' if active_page|default('dashboard') == 'dashboard' else '' }}">Dashboard</a>
+        <a href="{{ url_for('index') }}#hinzufuegen"
+           class="{{ 'active' if active_page == 'eintragen' else '' }}">Eintragen</a>
+        <a href="{{ url_for('index') }}#stagebuch"
+           class="{{ 'active' if active_page == 'tagebuch' else '' }}">Tagebuch</a>
+        <a href="{{ url_for('einstellungen') }}"
+           class="{{ 'active' if active_page == 'einstellungen' else '' }}">Einstellungen</a>
+        <a href="{{ url_for('datenbank') }}"
+           class="{{ 'active' if active_page == 'datenbank' else '' }}">Datenbank</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hier steckt der jeweilige Seiteninhalt (aus index.html usw.) -->
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>CALORIE TRACKER</strong> · Schulprojekt mit Python, Flask &amp; SQLite · Alle Daten bleiben lokal auf dem Computer.</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

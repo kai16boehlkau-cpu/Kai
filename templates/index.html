@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <!-- ======================================================
+         HERO: Begrüßung, Datum und Tageswechsel
+         ====================================================== -->
+    <section class="hero" id="dashboard">
+      <div class="hero-text">
+        <span class="kicker">Übersicht</span>
+        <h2>Willkommen zurück! 👋</h2>
+        <p class="hero-sub">Behalte den Überblick über deine Mahlzeiten – alles bleibt lokal auf deinem Computer.</p>
+        <div class="hero-date">📅 {{ date_label }}</div>
+      </div>
+
+      <div class="hero-side">
+        <span class="status-chip {% if goal_reached %}status-ok{% endif %}">
+          {% if goal_reached %}🎯{% else %}⚡{% endif %} {{ goal_message }}
+        </span>
+
+        <div class="day-nav">
+          <a class="icon-btn" href="?date={{ prev_date }}" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</a>
+          <form method="GET" action="{{ url_for('index') }}" class="date-form" id="date-form">
+            <input type="date" id="date-picker" name="date" value="{{ selected_date }}" aria-label="Datum wählen">
+          </form>
+          <a class="icon-btn" href="?date={{ next_date }}" title="Nächster Tag" aria-label="Nächster Tag">›</a>
+          {% if not is_today %}
+            <a class="btn btn-sm btn-soft" href="{{ url_for('index') }}">Zu heute</a>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         NUR BEIM ERSTEN MAL: Tagesziel festlegen
+         (Danach ist dieses Formular weg - Aenderung nur noch
+          auf der Seite "Einstellungen")
+         ====================================================== -->
+    {% if not goal_set %}
+    <section class="card start-card" id="ziel-start">
+      <div class="start-head">
+        <span class="start-step">Schritt 1 · einmalig</span>
+        <h2>Als Erstes: Dein persönliches Tagesziel festlegen</h2>
+        <p class="section-hint">
+          Gib einmalig ein, wie viele Kalorien du pro Tag essen möchtest.
+          Danach findest du das Ziel nur noch auf der Seite
+          <strong>„Einstellungen"</strong> wieder - hier auf der Startseite
+          kann es dann nicht mehr versehentlich geändert werden.
+          Der Wert 2000 kcal ist ein technischer Standardwert und keine
+          Ernährungsempfehlung.
+        </p>
+      </div>
+
+      <form method="POST" action="/update_goal" class="start-form">
+        <input type="hidden" name="date" value="{{ selected_date }}">
+        <input type="hidden" name="from" value="start">
+        <div class="form-field">
+          <label for="start_goal">Tagesziel in kcal (800 – 6000)</label>
+          <input type="number" id="start_goal" name="daily_goal"
+                 min="800" max="6000" step="1" value="{{ daily_goal }}" required>
+        </div>
+        <button type="submit" class="btn">Tagesziel speichern</button>
+      </form>
+    </section>
+    {% endif %}
+
+    <!-- ======================================================
+         DASHBOARD: die wichtigsten Zahlen des Tages
+         ====================================================== -->
+    <section class="kpi-grid" aria-label="Tageszahlen">
+
+      <!-- Fortschrittsring -->
+      <article class="card kpi kpi-ring fade-in">
+        <span class="kpi-label">Fortschritt zum Ziel</span>
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" class="progress-ring" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle id="ring-progress" class="ring-fg {% if goal_reached %}done{% endif %}"
+                    cx="60" cy="60" r="52"
+                    data-percent="{{ percent_for_ring }}"></circle>
+          </svg>
+          <div class="ring-label">
+            <div><strong id="percent-value">0</strong><span class="ring-unit">%</span></div>
+            <small>von {{ daily_goal }} kcal</small>
+          </div>
+        </div>
+        <p class="kpi-foot {% if goal_reached %}text-ok{% endif %}">{{ goal_message }}</p>
+      </article>
+
+      <!-- Aufgenommen -->
+      <article class="card kpi fade-in delay-1">
+        <span class="kpi-icon icon-pink">🍎</span>
+        <span class="kpi-label">Aufgenommen</span>
+        <strong class="kpi-value" id="stat-total" data-value="{{ total_calories }}">{{ total_calories }}</strong>
+        <span class="kpi-unit">kcal · {{ selected_date }}</span>
+      </article>
+
+      <!-- Tagesziel -->
+      <article class="card kpi fade-in delay-2">
+        <span class="kpi-icon icon-violet">🎯</span>
+        <span class="kpi-label">Tagesziel</span>
+        <strong class="kpi-value">{{ daily_goal }}</strong>
+        <span class="kpi-unit">kcal</span>
+        <a class="kpi-link" href="{{ '#ziel-start' if not goal_set else url_for('einstellungen') }}">
+          {{ 'Jetzt festlegen' if not goal_set else 'Ändern in den Einstellungen →' }}
+        </a>
+      </article>
+
+      <!-- Verbleibend -->
+      <article class="card kpi fade-in delay-3">
+        <span class="kpi-icon icon-blue">{% if remaining >= 0 %}⚡{% else %}⚠️{% endif %}</span>
+        <span class="kpi-label">{% if remaining >= 0 %}Noch verbleibend{% else %}Überschritten{% endif %}</span>
+        <strong class="kpi-value {% if remaining < 0 %}text-danger{% endif %}">{{ remaining }}</strong>
+        <span class="kpi-unit">kcal</span>
+      </article>
+
+      <!-- Einträge -->
+      <article class="card kpi fade-in delay-4">
+        <span class="kpi-icon icon-green">📋</span>
+        <span class="kpi-label">Einträge heute</span>
+        <strong class="kpi-value">{{ entry_count }}</strong>
+        <span class="kpi-unit">Lebensmittel</span>
+      </article>
+    </section>
+
+    <!-- ======================================================
+         MAHLZEITEN-VERGLEICH
+         ====================================================== -->
+    <section class="card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Kalorien im Vergleich</h2>
+          <p class="section-hint">Die Kalorien aller vier Mahlzeiten des gewählten Tages im direkten Vergleich.</p>
+        </div>
+        <span class="head-badge">🏁 Tagesbilanz</span>
+      </div>
+
+      <div class="meal-bars">
+        {% for meal in meals %}
+        <div class="meal-bar-row">
+          <span class="meal-name">
+            <span class="dot dot-{{ 'breakfast' if meal == 'Frühstück' else 'lunch' if meal == 'Mittagessen' else 'dinner' if meal == 'Abendessen' else 'snack' }}"></span>
+            {{ meal }}
+          </span>
+          <div class="meal-bar-track">
+            <div class="meal-bar-fill fill-{{ 'breakfast' if meal == 'Frühstück' else 'lunch' if meal == 'Mittagessen' else 'dinner' if meal == 'Abendessen' else 'snack' }}"
+                 data-width="{{ meal_bars[meal] }}" style="width: 0%;"></div>
+          </div>
+          <span class="meal-value">{{ calories_per_meal[meal] }} <small>kcal</small></span>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- ======================================================
+         ZWEI SPALTEN: Eintragen + Tagesziel (nur Anzeige)
+         ====================================================== -->
+    <div class="split">
+
+      <!-- Lebensmittel hinzufügen -->
+      <section class="card fade-in" id="hinzufuegen">
+        <div class="card-head">
+          <div>
+            <h2>Lebensmittel hinzufügen</h2>
+            <p class="section-hint">Schnellauswahl antippen, Menge anpassen, speichern.</p>
+          </div>
+          <span class="head-badge">➕ Neuer Eintrag</span>
+        </div>
+
+        <!-- Beispiel-Lebensmittel: Klick füllt nur das Formular, speichert nichts. -->
+        <div class="preset-list">
+          <button type="button" class="preset" data-name="Apfel" data-cal="52">🍎 Apfel <small>52</small></button>
+          <button type="button" class="preset" data-name="Banane" data-cal="89">🍌 Banane <small>89</small></button>
+          <button type="button" class="preset" data-name="Haferflocken" data-cal="379">🥣 Haferflocken <small>379</small></button>
+          <button type="button" class="preset" data-name="Reis" data-cal="130">🍚 Reis <small>130</small></button>
+          <button type="button" class="preset" data-name="Brot" data-cal="265">🍞 Brot <small>265</small></button>
+          <button type="button" class="preset" data-name="Ei" data-cal="143">🥚 Ei <small>143</small></button>
+          <button type="button" class="preset" data-name="Naturjoghurt" data-cal="59">🥛 Naturjoghurt <small>59</small></button>
+        </div>
+        <p class="preset-note">Werte pro 100 g sind Näherungswerte – der tatsächliche Wert kann je Produkt variieren.</p>
+
+        <form method="POST" action="/add_entry" class="stack-form" id="add-form">
+          <div class="form-grid">
+            <div class="form-field span-2">
+              <label for="name">Name des Lebensmittels</label>
+              <input type="text" id="name" name="name" maxlength="80" placeholder="z. B. Apfel" required>
+            </div>
+
+            <div class="form-field">
+              <label for="calories_per_100g">Kalorien pro 100 g</label>
+              <input type="number" id="calories_per_100g" name="calories_per_100g"
+                     min="1" max="900" step="0.1" placeholder="z. B. 52" required>
+            </div>
+
+            <div class="form-field">
+              <label for="amount_grams">Menge in Gramm</label>
+              <input type="number" id="amount_grams" name="amount_grams"
+                     min="1" max="5000" step="1" placeholder="z. B. 150" required>
+            </div>
+
+            <div class="form-field">
+              <label for="meal">Mahlzeit</label>
+              <select id="meal" name="meal" required>
+                {% for meal in meals %}
+                <option value="{{ meal }}">{{ meal }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="entry-date">Datum</label>
+              <input type="date" id="entry-date" name="date" value="{{ selected_date }}" required>
+            </div>
+
+            <div class="form-field span-2">
+              <label>Berechnete Kalorien der Portion</label>
+              <div class="calorie-preview" id="calorie-preview">– kcal</div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-wide">Eintrag speichern</button>
+        </form>
+      </section>
+
+      <!-- Persönliches Tagesziel: ab jetzt nur noch Anzeige -->
+      <div class="split-side">
+        <section class="card fade-in" id="ziel">
+          <div class="card-head">
+            <div>
+              <h2>Persönliches Tagesziel</h2>
+              <p class="section-hint">Aktuell <strong>{{ daily_goal }} kcal</strong> pro Tag.</p>
+            </div>
+            <span class="head-badge">🎯</span>
+          </div>
+
+          <p class="goal-readonly">
+            <strong>{{ daily_goal }}</strong> <span>kcal pro Tag</span>
+          </p>
+
+          <a class="btn btn-soft btn-wide" href="{{ '#ziel-start' if not goal_set else url_for('einstellungen') }}">
+            {{ 'Tagesziel jetzt festlegen' if not goal_set else 'Ändern auf der Seite Einstellungen' }}
+          </a>
+
+          <p class="fineprint">
+            Das Ziel lässt sich nach der Einrichtung nur noch auf der separaten
+            Seite <strong>Einstellungen</strong> verändern - so verhinderst du,
+            dass du es beim Tracken aus Versehen änderst.
+            2000 kcal sind ein technischer Standardwert und keine Ernährungsempfehlung.
+          </p>
+        </section>
+
+        <!-- Kleine Bilanz der vier Mahlzeiten als Chips -->
+        <section class="card fade-in">
+          <div class="card-head">
+            <div>
+              <h2>Bilanz nach Mahlzeit</h2>
+              <p class="section-hint">Kalorien je Mahlzeit am {{ selected_date }}.</p>
+            </div>
+          </div>
+
+          <div class="meal-chips">
+            {% for meal in meals %}
+            <div class="meal-chip chip-{{ 'breakfast' if meal == 'Frühstück' else 'lunch' if meal == 'Mittagessen' else 'dinner' if meal == 'Abendessen' else 'snack' }}">
+              <span class="chip-icon">{% if meal == 'Frühstück' %}🍳{% elif meal == 'Mittagessen' %}🍛{% elif meal == 'Abendessen' %}🍽️{% else %}🍎{% endif %}</span>
+              <span class="chip-name">{{ meal }}</span>
+              <strong>{{ calories_per_meal[meal] }}</strong>
+              <small>kcal</small>
+            </div>
+            {% endfor %}
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ======================================================
+         ERNÄHRUNGSTAGEBUCH
+         ====================================================== -->
+    <section class="card fade-in" id="stagebuch">
+      <div class="card-head">
+        <div>
+          <h2>Mein Ernährungstagebuch</h2>
+          <p class="section-hint">Alle Einträge vom <strong>{{ date_label }}</strong></p>
+        </div>
+        <span class="head-badge">{{ entry_count }} {% if entry_count == 1 %}Eintrag{% else %}Einträge{% endif %}</span>
+      </div>
+
+      <!-- Suche und Filter – funktionieren zusammen -->
+      <div class="diary-tools">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="search-input" placeholder="Name suchen …" aria-label="Im Tagebuch suchen">
+        </div>
+
+        <div class="filter-chips" role="group" aria-label="Nach Mahlzeit filtern">
+          <button type="button" class="filter-btn active" data-filter="alle">Alle</button>
+          {% for meal in meals %}
+          <button type="button" class="filter-btn" data-filter="{{ meal }}">
+            {% if meal == 'Frühstück' %}🍳{% elif meal == 'Mittagessen' %}🍛{% elif meal == 'Abendessen' %}🍽️{% else %}🍎{% endif %}
+            {{ meal }}
+          </button>
+          {% endfor %}
+        </div>
+
+        <button type="button" class="btn btn-sm btn-soft" id="show-all-btn">Filter zurücksetzen</button>
+      </div>
+
+      {% if entries|length == 0 %}
+        <!-- Anzeige, wenn noch nichts eingetragen wurde -->
+        <div class="empty-state">
+          <span class="empty-icon">🥗</span>
+          <h3>Noch keine Mahlzeiten eingetragen</h3>
+          <p>Füge oben dein erstes Lebensmittel hinzu – dann erscheint es hier.</p>
+          <a class="btn btn-sm" href="#hinzufuegen">Jetzt hinzufügen</a>
+        </div>
+      {% else %}
+        <ul class="entry-list" id="entry-list">
+          {% for entry in entries %}
+          <li class="entry-item"
+              data-name="{{ entry.name|lower }}"
+              data-meal="{{ entry.meal }}">
+            <span class="entry-icon">{{ entry.meal_icon }}</span>
+
+            <div class="entry-main">
+              <strong class="entry-name">{{ entry.name }}</strong>
+              <span class="entry-meta">
+                <span class="badge badge-{{ entry.meal_style }}">{{ entry.meal }}</span>
+                {{ entry.amount_display }} g · {{ entry.date }}
+              </span>
+            </div>
+
+            <span class="entry-calories">{{ entry.calories }} <small>kcal</small></span>
+
+            <div class="entry-actions">
+              <button type="button" class="btn btn-sm btn-soft btn-edit"
+                      data-id="{{ entry.id }}"
+                      data-name="{{ entry.name }}"
+                      data-cal="{{ entry.calories_per_100g }}"
+                      data-amount="{{ entry.amount_grams }}"
+                      data-meal="{{ entry.meal }}"
+                      data-date="{{ entry.date }}">Bearbeiten</button>
+
+              <form method="POST" action="/delete_entry/{{ entry.id }}" class="delete-form">
+                <input type="hidden" name="date" value="{{ selected_date }}">
+                <button type="submit" class="btn btn-sm btn-danger">Löschen</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!-- Hinweis, wenn Suche/Filter nichts gefunden haben -->
+        <div class="empty-state" id="no-results" hidden>
+          <span class="empty-icon">🔍</span>
+          <h3>Keine Treffer</h3>
+          <p>Zu dieser Suche oder diesem Filter wurde nichts gefunden.</p>
+        </div>
+      {% endif %}
+    </section>
+
+    <!-- ======================================================
+         DIALOG: Eintrag bearbeiten
+         ====================================================== -->
+    <div class="modal-overlay" id="edit-modal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+        <div class="modal-head">
+          <h3 id="edit-title">✏️ Eintrag bearbeiten</h3>
+          <button type="button" class="icon-btn" id="modal-close" aria-label="Dialog schließen">✕</button>
+        </div>
+
+        <form method="POST" id="edit-form" class="stack-form">
+          <div class="form-field">
+            <label for="edit-name">Name des Lebensmittels</label>
+            <input type="text" id="edit-name" name="name" maxlength="80" required>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="edit-cal">Kalorien pro 100 g</label>
+              <input type="number" id="edit-cal" name="calories_per_100g" min="1" max="900" step="0.1" required>
+            </div>
+            <div class="form-field">
+              <label for="edit-amount">Menge in Gramm</label>
+              <input type="number" id="edit-amount" name="amount_grams" min="1" max="5000" step="1" required>
+            </div>
+            <div class="form-field">
+              <label for="edit-meal">Mahlzeit</label>
+              <select id="edit-meal" name="meal" required>
+                {% for meal in meals %}
+                <option value="{{ meal }}">{{ meal }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="edit-date">Datum</label>
+              <input type="date" id="edit-date" name="date" required>
+            </div>
+          </div>
+
+          <p class="fineprint">Die Kalorien der Portion werden automatisch neu berechnet.</p>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-soft" id="modal-cancel">Abbrechen</button>
+            <button type="submit" class="btn">Änderungen speichern</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+{% endblock %}

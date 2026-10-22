@@ -1,0 +1,7 @@
+# Diese Datei installiert die nötigen Bibliotheken mit:
+#   pip install -r requirements.txt
+# Flask ist die einzige externe Bibliothek, die wir für den Code brauchen.
+# sqlite3 kommt direkt mit Python mit und muss NICHT installiert werden.
+# gunicorn startet die App auf dem Hosting-Server (Render) - lokal nicht nötig.
+Flask>=3.0
+gunicorn>=21.0

@@ -1,0 +1,8 @@
+# Die lokale Datenbank, Server-Logs und Python-Cache kommen NICHT ins Git.
+database.db
+server_out.log
+server_err.log
+__pycache__/
+*.pyc
+.venv/
+venv/
