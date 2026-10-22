@@ -27,6 +27,7 @@
           {% if not is_today %}
             <a class="btn btn-sm btn-soft" href="{{ url_for('index') }}">Zu heute</a>
           {% endif %}
+          <a class="btn btn-sm btn-soft" href="{{ url_for('kalender') }}" title="Kalender mit Kalorien pro Tag">📅 Kalender</a>
         </div>
       </div>
     </section>
@@ -95,19 +96,8 @@
         <span class="kpi-unit">kcal · {{ selected_date }}</span>
       </article>
 
-      <!-- Tagesziel -->
-      <article class="card kpi fade-in delay-2">
-        <span class="kpi-icon icon-violet">🎯</span>
-        <span class="kpi-label">Tagesziel</span>
-        <strong class="kpi-value">{{ daily_goal }}</strong>
-        <span class="kpi-unit">kcal</span>
-        <a class="kpi-link" href="{{ '#ziel-start' if not goal_set else url_for('einstellungen') }}">
-          {{ 'Jetzt festlegen' if not goal_set else 'Ändern in den Einstellungen →' }}
-        </a>
-      </article>
-
       <!-- Verbleibend -->
-      <article class="card kpi fade-in delay-3">
+      <article class="card kpi fade-in delay-2">
         <span class="kpi-icon icon-blue">{% if remaining >= 0 %}⚡{% else %}⚠️{% endif %}</span>
         <span class="kpi-label">{% if remaining >= 0 %}Noch verbleibend{% else %}Überschritten{% endif %}</span>
         <strong class="kpi-value {% if remaining < 0 %}text-danger{% endif %}">{{ remaining }}</strong>
@@ -115,7 +105,7 @@
       </article>
 
       <!-- Einträge -->
-      <article class="card kpi fade-in delay-4">
+      <article class="card kpi fade-in delay-3">
         <span class="kpi-icon icon-green">📋</span>
         <span class="kpi-label">Einträge heute</span>
         <strong class="kpi-value">{{ entry_count }}</strong>
@@ -126,7 +116,7 @@
     <!-- ======================================================
          MAHLZEITEN-VERGLEICH
          ====================================================== -->
-    <section class="card fade-in">
+    <section class="card fade-in" id="vergleich">
       <div class="card-head">
         <div>
           <h2>Kalorien im Vergleich</h2>

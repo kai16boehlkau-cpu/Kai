@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body{% if not (goal_set|default(false)) %} class="goal-locked"{% endif %}>
 
   <!-- ======================================================
        Ladebildschirm: großes Logo, das kleinerfliegt
@@ -52,6 +52,8 @@
            class="{{ 'active' if active_page == 'eintragen' else '' }}">Eintragen</a>
         <a href="{{ url_for('index') }}#stagebuch"
            class="{{ 'active' if active_page == 'tagebuch' else '' }}">Tagebuch</a>
+        <a href="{{ url_for('kalender') }}"
+           class="{{ 'active' if active_page == 'kalender' else '' }}">Kalender</a>
         <a href="{{ url_for('einstellungen') }}"
            class="{{ 'active' if active_page == 'einstellungen' else '' }}">Einstellungen</a>
         <a href="{{ url_for('datenbank') }}"

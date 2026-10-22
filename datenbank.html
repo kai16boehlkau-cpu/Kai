@@ -6,6 +6,12 @@
   <title>Datenbank – CALORIE TRACKER</title>
   <link rel="icon" type="image/png" href="static/logo.png">
   <link rel="stylesheet" href="static/style.css">
+  <script>
+    // Ohne festgelegtes Tagesziel gibt es nur die Startseite.
+    if (localStorage.getItem("kzt_goal_set") !== "true") {
+      window.location.replace("index.html");
+    }
+  </script>
 </head>
 <body>
 
@@ -29,6 +35,7 @@
         <a href="index.html">Dashboard</a>
         <a href="index.html#hinzufuegen">Eintragen</a>
         <a href="index.html#stagebuch">Tagebuch</a>
+        <a href="kalender.html">Kalender</a>
         <a href="einstellungen.html">Einstellungen</a>
         <a href="datenbank.html" class="active">Datenbank</a>
       </nav>

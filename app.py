@@ -398,7 +398,162 @@ def datenbank():
     """Zeigt die Erklärungsseite zum Aufbau der SQLite-Datenbank."""
     return render_template(
         "datenbank.html",
+        goal_set=goal_is_set(),
         active_page="datenbank",
+    )
+
+
+@app.route("/kalender")
+def kalender():
+    """Zeigt einen Kalender mit den Kalorien pro Tag an.
+
+    Adresse: /kalender?month=JJJJ-MM&day=JJJJ-MM-TT
+    - month: welcher Monat angezeigt wird (Standard: aktueller Monat)
+    - day:   welcher Tag im Detail angezeigt wird (optional)
+    """
+
+    today = date.today()
+
+    # --- Monat aus der Adresszeile lesen (z.B. ?month=2026-10) ---
+    month_param = request.args.get("month", "").strip()
+    try:
+        shown_month = datetime.strptime(month_param, "%Y-%m").date().replace(day=1)
+    except ValueError:
+        shown_month = today.replace(day=1)
+
+    # Erster und letzter Tag des angezeigten Monats.
+    month_start = shown_month
+    if shown_month.month == 12:
+        next_month = date(shown_month.year + 1, 1, 1)
+    else:
+        next_month = date(shown_month.year, shown_month.month + 1, 1)
+    month_end = next_month - timedelta(days=1)
+
+    # --- Kalorien pro Tag in diesem Monat (eine SQL-Abfrage) ---
+    connection = get_db()
+    rows = connection.execute(
+        """
+        SELECT date, SUM(calories) AS total, COUNT(*) AS count
+        FROM entries
+        WHERE date >= ? AND date <= ?
+        GROUP BY date
+        """,
+        (month_start.isoformat(), month_end.isoformat()),
+    ).fetchall()
+    connection.close()
+
+    calories_by_day = {}
+    for row in rows:
+        calories_by_day[row["date"]] = {
+            "total": row["total"],
+            "count": row["count"],
+        }
+
+    # --- Kalenderzellen bauen ---
+    # Erster Wochentag des Monats (Montag = 0, Sonntag = 6).
+    offset = month_start.weekday()
+    days_in_month = month_end.day
+
+    cells = []
+    # Leere Felder vor dem 1. Tag, damit die Spalten passen.
+    for _ in range(offset):
+        cells.append({"empty": True})
+
+    daily_goal = get_daily_goal()
+    for day_number in range(1, days_in_month + 1):
+        iso = date(shown_month.year, shown_month.month, day_number).isoformat()
+        info = calories_by_day.get(iso)
+        cells.append({
+            "empty": False,
+            "day": day_number,
+            "iso": iso,
+            "total": info["total"] if info else 0,
+            "count": info["count"] if info else 0,
+            "is_today": iso == today.isoformat(),
+            "over_goal": bool(info) and info["total"] > daily_goal,
+        })
+
+    # --- Tagesdetails, wenn ein Tag ausgewählt wurde ---
+    day_param = request.args.get("day", "").strip()
+    day_entries = []
+    day_total = 0
+    day_count = 0
+    day_label = ""
+    day_is_valid = False
+
+    try:
+        selected_day = datetime.strptime(day_param, "%Y-%m-%d").date()
+    except ValueError:
+        selected_day = None
+
+    if selected_day is not None and month_start <= selected_day <= month_end:
+        day_is_valid = True
+        day_label = "{}, {}. {} {}".format(
+            WEEKDAYS[selected_day.weekday()],
+            selected_day.day,
+            MONTHS[selected_day.month - 1],
+            selected_day.year,
+        )
+
+        connection = get_db()
+        day_rows = connection.execute(
+            """
+            SELECT * FROM entries
+            WHERE date = ?
+            ORDER BY CASE meal
+                        WHEN 'Frühstück' THEN 1
+                        WHEN 'Mittagessen' THEN 2
+                        WHEN 'Abendessen' THEN 3
+                        ELSE 4
+                     END,
+                     created_at
+            """,
+            (selected_day.isoformat(),),
+        ).fetchall()
+        connection.close()
+
+        for row in day_rows:
+            entry = dict(row)
+            entry["amount_display"] = "{:g}".format(entry["amount_grams"])
+            entry["meal_icon"] = {
+                "Frühstück": "🍳",
+                "Mittagessen": "🍛",
+                "Abendessen": "🍽️",
+                "Snack": "🍎",
+            }.get(entry["meal"], "🍴")
+            entry["meal_style"] = MEAL_STYLE.get(entry["meal"], "snack")
+            day_entries.append(entry)
+            day_total += entry["calories"]
+            day_count += 1
+
+    # --- Umschalter für den Vormonat / Nachfolgemonat ---
+    if shown_month.month == 1:
+        prev_month = date(shown_month.year - 1, 12, 1)
+    else:
+        prev_month = date(shown_month.year, shown_month.month - 1, 1)
+    next_month_param = "{:04d}-{:02d}".format(next_month.year, next_month.month)
+    prev_month_param = "{:04d}-{:02d}".format(prev_month.year, prev_month.month)
+
+    return render_template(
+        "kalender.html",
+        goal_set=goal_is_set(),
+        daily_goal=daily_goal,
+        month_label="{} {}".format(MONTHS[shown_month.month - 1], shown_month.year),
+        month_param="{:04d}-{:02d}".format(shown_month.year, shown_month.month),
+        prev_month_param=prev_month_param,
+        next_month_param=next_month_param,
+        weekday_labels=["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+        cells=cells,
+        day_is_valid=day_is_valid,
+        day_param=day_param if day_is_valid else "",
+        day_label=day_label,
+        day_entries=day_entries,
+        day_total=day_total,
+        day_count=day_count,
+        today_param=today.isoformat(),
+        month_start_param=month_start.isoformat(),
+        month_end_param=month_end.isoformat(),
+        active_page="kalender",
     )
 
 

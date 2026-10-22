@@ -7,6 +7,14 @@
   <meta name="description" content="Kalorienzähler als Schulprojekt mit JavaScript und localStorage.">
   <link rel="icon" type="image/png" href="static/logo.png">
   <link rel="stylesheet" href="static/style.css">
+  <script>
+    // Gesperrt, solange kein Tagesziel festgelegt wurde:
+    // Bis "kzt_goal_set" im Browser gespeichert ist, wird NUR das
+    // Ziel-Formular angezeigt (Klasse "goal-locked" am <html>).
+    if (localStorage.getItem("kzt_goal_set") !== "true") {
+      document.documentElement.classList.add("goal-locked");
+    }
+  </script>
 </head>
 <body>
 
@@ -33,6 +41,7 @@
         <a href="index.html" class="active">Dashboard</a>
         <a href="index.html#hinzufuegen">Eintragen</a>
         <a href="index.html#stagebuch">Tagebuch</a>
+        <a href="kalender.html">Kalender</a>
         <a href="einstellungen.html">Einstellungen</a>
         <a href="datenbank.html">Datenbank</a>
       </nav>
@@ -60,6 +69,7 @@
           </div>
           <button type="button" class="icon-btn" id="day-next" title="Nächster Tag" aria-label="Nächster Tag">›</button>
           <button type="button" class="btn btn-sm btn-soft" id="today-btn" hidden>Zu heute</button>
+          <a class="btn btn-sm btn-soft" href="kalender.html" title="Kalender mit Kalorien pro Tag">📅 Kalender</a>
         </div>
       </div>
     </section>
@@ -114,21 +124,13 @@
       </article>
 
       <article class="card kpi fade-in delay-2">
-        <span class="kpi-icon icon-violet">🎯</span>
-        <span class="kpi-label">Tagesziel</span>
-        <strong class="kpi-value" id="kpi-goal">2000</strong>
-        <span class="kpi-unit">kcal</span>
-        <a class="kpi-link" id="kpi-goal-link" href="einstellungen.html">Ändern in den Einstellungen →</a>
-      </article>
-
-      <article class="card kpi fade-in delay-3">
         <span class="kpi-icon icon-blue" id="remain-icon">⚡</span>
         <span class="kpi-label" id="remain-label">Noch verbleibend</span>
         <strong class="kpi-value" id="stat-remaining">0</strong>
         <span class="kpi-unit">kcal</span>
       </article>
 
-      <article class="card kpi fade-in delay-4">
+      <article class="card kpi fade-in delay-3">
         <span class="kpi-icon icon-green">📋</span>
         <span class="kpi-label">Einträge heute</span>
         <strong class="kpi-value" id="stat-count">0</strong>
@@ -137,7 +139,7 @@
     </section>
 
     <!-- MAHLZEITEN-VERGLEICH -->
-    <section class="card fade-in">
+    <section class="card fade-in" id="vergleich">
       <div class="card-head">
         <div>
           <h2>Kalorien im Vergleich</h2>

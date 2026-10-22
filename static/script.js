@@ -79,8 +79,8 @@ if (splash && splashLogo && brandMark) {
     }
 
     function beginHold() {
-      // Logo eine Weile gross zeigen, dann fliegt es los.
-      window.setTimeout(startFlight, 900);
+      // Logo 3 Sekunden gross zeigen, dann fliegt es los.
+      window.setTimeout(startFlight, 3000);
     }
 
     if (splashLogo.complete && splashLogo.naturalWidth > 0) {
@@ -88,7 +88,7 @@ if (splash && splashLogo && brandMark) {
     } else {
       splashLogo.addEventListener("load", beginHold);
       // Sicherheitsnetz, falls das Bild nicht laedt.
-      window.setTimeout(startFlight, 2500);
+      window.setTimeout(startFlight, 6000);
     }
   }
 }

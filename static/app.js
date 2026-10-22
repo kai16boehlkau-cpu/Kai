@@ -38,6 +38,17 @@ var entries = loadData(STORE_ENTRIES, []);
 var dailyGoal = loadData(STORE_GOAL, 2000);
 var goalIsSet = loadData(STORE_GOALSET, false);
 
+// Gesperrt, solange kein Tagesziel festgelegt wurde:
+// Es gibt nur die Startseite mit dem Ziel-Formular.
+// (Die Sperre selbst sitzt als Klasse "goal-locked" am <html>-Element,
+//  gesetzt von einem kleinen Script im <head> der index.html.)
+if (!goalIsSet) {
+  var currentPage = window.location.pathname.split("/").pop();
+  if (currentPage && currentPage !== "index.html") {
+    window.location.replace("index.html");
+  }
+}
+
 function persistEntries() { saveData(STORE_ENTRIES, entries); }
 
 /* ------------------------------------------------------------
@@ -161,10 +172,12 @@ if (splash && splashLogo && brandMark) {
     }
 
     if (splashLogo.complete && splashLogo.naturalWidth > 0) {
-      setTimeout(startFlight, 900);
+      // Logo 3 Sekunden gross zeigen, dann fliegt es los.
+      setTimeout(startFlight, 3000);
     } else {
-      splashLogo.addEventListener("load", function () { setTimeout(startFlight, 900); });
-      setTimeout(startFlight, 2500);
+      splashLogo.addEventListener("load", function () { setTimeout(startFlight, 3000); });
+      // Sicherheitsnetz, falls das Bild nicht laedt.
+      setTimeout(startFlight, 6000);
     }
   }
 }
@@ -266,15 +279,6 @@ function renderDay() {
   }
   var totalSub = document.getElementById("stat-total-sub");
   if (totalSub) totalSub.textContent = "kcal · " + selectedDate;
-
-  var kpiGoal = document.getElementById("kpi-goal");
-  if (kpiGoal) kpiGoal.textContent = String(dailyGoal);
-
-  var kpiLink = document.getElementById("kpi-goal-link");
-  if (kpiLink) {
-    kpiLink.textContent = goalIsSet ? "Ändern in den Einstellungen →" : "Jetzt festlegen";
-    kpiLink.setAttribute("href", goalIsSet ? "einstellungen.html" : "#ziel-start");
-  }
 
   var remainIcon = document.getElementById("remain-icon");
   var remainLabel = document.getElementById("remain-label");
@@ -634,6 +638,7 @@ function saveGoal(value) {
   goalIsSet = true;
   saveData(STORE_GOAL, dailyGoal);
   saveData(STORE_GOALSET, true);
+  document.documentElement.classList.remove("goal-locked");
   return null;
 }
 
@@ -702,9 +707,196 @@ var entryDateInput = document.getElementById("entry-date");
 if (entryDateInput) entryDateInput.value = selectedDate;
 
 /* ------------------------------------------------------------
-   13) Start: Seite einrichten
+   13) Kalenderseite: Monat mit Kalorien pro Tag + Tagesdetails
    ------------------------------------------------------------ */
-if (document.getElementById("entry-list") || document.getElementById("kpi-goal")) {
+var calDaysBox = document.getElementById("cal-days");
+var calTitle = document.getElementById("cal-title");
+var calDetails = document.getElementById("cal-details");
+var calGoalChip = document.getElementById("cal-goal-chip");
+
+// Angezeigter Monat: URL-Parameter ?month=JJJJ-MM, sonst aktueller Monat.
+var calMonthParam = params.get("month");
+var calYear;
+var calMonth; // 0 = Januar ... 11 = Dezember
+if (calMonthParam && /^\d{4}-\d{2}$/.test(calMonthParam)) {
+  calYear = parseInt(calMonthParam.slice(0, 4), 10);
+  calMonth = parseInt(calMonthParam.slice(5, 7), 10) - 1;
+} else {
+  var calNow = new Date();
+  calYear = calNow.getFullYear();
+  calMonth = calNow.getMonth();
+}
+
+// Gewählter Tag im Kalender: ?day=JJJJ-MM-TT
+var calSelectedDay = params.get("day");
+if (!isValidDate(calSelectedDay)) calSelectedDay = null;
+
+// Kalorien und Eintragsanzahl je Tag zusammenzählen.
+function calTotalsByDay() {
+  var map = {};
+  entries.forEach(function (entry) {
+    if (!map[entry.date]) map[entry.date] = { total: 0, count: 0 };
+    map[entry.date].total += entry.calories;
+    map[entry.date].count += 1;
+  });
+  return map;
+}
+
+function calFormatNumber(value) {
+  return Number(value).toLocaleString("de-DE");
+}
+
+function renderCalDayDetails(iso) {
+  if (!calDetails) return;
+
+  var dayEntries = entries.filter(function (entry) { return entry.date === iso; });
+  dayEntries.sort(function (a, b) {
+    var orderA = MEAL_ORDER[a.meal] || 9;
+    var orderB = MEAL_ORDER[b.meal] || 9;
+    if (orderA !== orderB) return orderA - orderB;
+    return String(a.created_at).localeCompare(String(b.created_at));
+  });
+
+  var total = 0;
+  dayEntries.forEach(function (entry) { total += entry.calories; });
+
+  var parsed = new Date(iso + "T00:00:00");
+  var label = WEEKDAYS[(parsed.getDay() + 6) % 7] + ", " +
+    parsed.getDate() + ". " + MONTHS[parsed.getMonth()] + " " + parsed.getFullYear();
+
+  var html =
+    '<div class="cal-details-head">' +
+      "<h4>" + escapeHTML(label) + "</h4>" +
+      '<span class="cal-total-chip">' + calFormatNumber(total) + " kcal · " +
+        dayEntries.length + (dayEntries.length === 1 ? " Eintrag" : " Einträge") +
+      "</span>" +
+    "</div>";
+
+  if (dayEntries.length === 0) {
+    html += '<div class="empty-state">An diesem Tag wurden noch keine Einträge gespeichert.</div>';
+  } else {
+    dayEntries.forEach(function (entry) {
+      var amount = Number(entry.amount_grams);
+      var cal100 = Number(entry.calories_per_100g);
+      html +=
+        '<div class="cal-entry">' +
+          '<span class="cal-entry-icon icon-' + (MEAL_STYLE[entry.meal] || "snack") + '">' +
+            (MEAL_ICON[entry.meal] || "🍴") +
+          "</span>" +
+          '<div class="cal-entry-body">' +
+            '<div class="cal-entry-name">' + escapeHTML(entry.name) + "</div>" +
+            '<div class="cal-entry-meta">' +
+              escapeHTML(entry.meal) + " · " + amount + " g · " +
+              calFormatNumber(cal100) + " kcal/100 g" +
+            "</div>" +
+          "</div>" +
+          '<span class="cal-entry-kcal">' + entry.calories + " kcal</span>" +
+        "</div>";
+    });
+  }
+
+  calDetails.innerHTML = html;
+}
+
+function renderCalendar() {
+  if (!calDaysBox) return;
+
+  if (calTitle) {
+    calTitle.textContent = MONTHS[calMonth] + " " + calYear;
+  }
+  if (calGoalChip) {
+    calGoalChip.textContent = "🎯 Tagesziel: " + dailyGoal + " kcal";
+  }
+
+  var totals = calTotalsByDay();
+  var first = new Date(calYear, calMonth, 1);
+  var offset = (first.getDay() + 6) % 7; // Montag = 0
+  var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  var today = todayISO();
+
+  calDaysBox.innerHTML = "";
+
+  var i;
+  for (i = 0; i < offset; i++) {
+    var empty = document.createElement("div");
+    empty.className = "cal-day cal-empty";
+    calDaysBox.appendChild(empty);
+  }
+
+  for (i = 1; i <= daysInMonth; i++) {
+    var iso = calYear + "-" + String(calMonth + 1).padStart(2, "0") + "-" + String(i).padStart(2, "0");
+    var info = totals[iso] || { total: 0, count: 0 };
+
+    var cell = document.createElement("button");
+    cell.type = "button";
+    cell.className = "cal-day";
+    if (iso === today) cell.classList.add("cal-today");
+    if (iso === calSelectedDay) cell.classList.add("cal-selected");
+
+    var num = document.createElement("span");
+    num.className = "cal-num";
+    num.textContent = String(i);
+    cell.appendChild(num);
+
+    var kcal = document.createElement("span");
+    kcal.className = "cal-kcal";
+    if (info.count === 0) {
+      kcal.classList.add("cal-zero");
+      kcal.textContent = "–";
+    } else {
+      if (info.total > dailyGoal) kcal.classList.add("cal-over");
+      kcal.textContent = info.total + " kcal";
+    }
+    cell.appendChild(kcal);
+
+    cell.setAttribute("aria-label", iso + ", " + info.total + " Kalorien");
+    cell.addEventListener("click", (function (dayIso) {
+      return function () {
+        calSelectedDay = dayIso;
+        renderCalendar();
+        renderCalDayDetails(dayIso);
+      };
+    })(iso));
+
+    calDaysBox.appendChild(cell);
+  }
+
+  if (calSelectedDay) renderCalDayDetails(calSelectedDay);
+}
+
+var calPrev = document.getElementById("cal-prev");
+var calNext = document.getElementById("cal-next");
+if (calPrev) {
+  calPrev.addEventListener("click", function () {
+    calMonth -= 1;
+    if (calMonth < 0) { calMonth = 11; calYear -= 1; }
+    calSelectedDay = null;
+    renderCalendar();
+    if (calDetails) {
+      calDetails.innerHTML =
+        '<div class="empty-state">Klicke auf einen Tag im Kalender, um alle Einträge dieses Tages zu sehen.</div>';
+    }
+  });
+}
+if (calNext) {
+  calNext.addEventListener("click", function () {
+    calMonth += 1;
+    if (calMonth > 11) { calMonth = 0; calYear += 1; }
+    calSelectedDay = null;
+    renderCalendar();
+    if (calDetails) {
+      calDetails.innerHTML =
+        '<div class="empty-state">Klicke auf einen Tag im Kalender, um alle Einträge dieses Tages zu sehen.</div>';
+    }
+  });
+}
+
+if (calDaysBox) renderCalendar();
+
+/* ------------------------------------------------------------
+   14) Start: Seite einrichten
+   ------------------------------------------------------------ */
+if (document.getElementById("entry-list")) {
   renderDay();
 }
 

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalender – CALORIE TRACKER</title>
+  <link rel="icon" type="image/png" href="static/logo.png">
+  <link rel="stylesheet" href="static/style.css">
+  <script>
+    // Ohne festgelegtes Tagesziel gibt es nur die Startseite.
+    if (localStorage.getItem("kzt_goal_set") !== "true") {
+      window.location.replace("index.html");
+    }
+  </script>
+</head>
+<body>
+
+  <div id="splash">
+    <img class="splash-logo" id="splash-logo" src="static/logo.png" alt="">
+    <div class="splash-name">CALORIE <span>TRACKER</span></div>
+  </div>
+
+  <div id="toast-area" aria-live="polite"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <img src="static/logo.png" alt="Logo des Calorie Trackers">
+        </span>
+        <span class="brand-name">CALORIE <span>TRACKER</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="index.html">Dashboard</a>
+        <a href="index.html#hinzufuegen">Eintragen</a>
+        <a href="index.html#stagebuch">Tagebuch</a>
+        <a href="kalender.html" class="active">Kalender</a>
+        <a href="einstellungen.html">Einstellungen</a>
+        <a href="datenbank.html">Datenbank</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero" id="kalender-hero">
+      <div class="hero-text">
+        <span class="kicker">Kalender</span>
+        <h2>📅 Dein Monat im Überblick</h2>
+        <p class="hero-sub">
+          Unter jedem Tag stehen die Kalorien, die du an diesem Tag
+          gegessen hast. Klicke auf einen Tag, um alle Einträge zu sehen.
+        </p>
+      </div>
+      <div class="hero-side">
+        <span class="status-chip" id="cal-goal-chip">🎯 Tagesziel</span>
+      </div>
+    </section>
+
+    <section class="card fade-in" id="kalender-card">
+
+      <!-- Monatswechsel: Pfeil links, Monat, Pfeil rechts -->
+      <div class="cal-toolbar">
+        <button type="button" class="icon-btn" id="cal-prev"
+                title="Vorheriger Monat" aria-label="Vorheriger Monat">‹</button>
+        <h3 id="cal-title">–</h3>
+        <button type="button" class="icon-btn" id="cal-next"
+                title="Nächster Monat" aria-label="Nächster Monat">›</button>
+      </div>
+
+      <!-- Wochentage als feste Kopfzeile -->
+      <div class="cal-grid" aria-label="Wochentage">
+        <div class="cal-dow">Mo</div>
+        <div class="cal-dow">Di</div>
+        <div class="cal-dow">Mi</div>
+        <div class="cal-dow">Do</div>
+        <div class="cal-dow">Fr</div>
+        <div class="cal-dow">Sa</div>
+        <div class="cal-dow">So</div>
+      </div>
+
+      <!-- Tage des Monats (wird von JavaScript gefüllt) -->
+      <div class="cal-grid" id="cal-days" aria-label="Tage des Monats"></div>
+
+      <!-- Tagesdetails (wird von JavaScript gefüllt) -->
+      <div class="cal-details" id="cal-details">
+        <div class="empty-state">
+          Klicke auf einen Tag im Kalender, um alle Einträge dieses Tages zu sehen.
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>CALORIE TRACKER</strong> · Schulprojekt mit Python, Flask &amp; SQLite · Alle Daten bleiben lokal auf dem Computer.</p>
+  </footer>
+
+  <script src="static/app.js"></script>
+</body>
+</html>

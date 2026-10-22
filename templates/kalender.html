@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Kalender – CALORIE TRACKER</title>{% endblock %}
+
+{% block content %}
+
+    <!-- ======================================================
+         HERO: Kalender-Seite
+         ====================================================== -->
+    <section class="hero" id="kalender-hero">
+      <div class="hero-text">
+        <span class="kicker">Kalender</span>
+        <h2>📅 Dein Monat im Überblick</h2>
+        <p class="hero-sub">
+          Unter jedem Tag stehen die Kalorien, die du an diesem Tag
+          gegessen hast. Klicke auf einen Tag, um alle Einträge zu sehen.
+        </p>
+      </div>
+      <div class="hero-side">
+        <span class="status-chip">🎯 Tagesziel: {{ daily_goal }} kcal</span>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         KALENDER: Monat + Tagesdetails
+         ====================================================== -->
+    <section class="card fade-in" id="kalender-card">
+
+      <!-- Monatswechsel: Pfeil links, Monat, Pfeil rechts -->
+      <div class="cal-toolbar">
+        <a class="icon-btn" href="{{ url_for('kalender', month=prev_month_param) }}"
+           title="Vorheriger Monat" aria-label="Vorheriger Monat">‹</a>
+        <h3>{{ month_label }}</h3>
+        <a class="icon-btn" href="{{ url_for('kalender', month=next_month_param) }}"
+           title="Nächster Monat" aria-label="Nächster Monat">›</a>
+      </div>
+
+      <!-- Wochentage als feste Kopfzeile -->
+      <div class="cal-grid" aria-label="Wochentage">
+        {% for label in weekday_labels %}
+        <div class="cal-dow">{{ label }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Tage des Monats: Zahl + Kalorien, Klick zeigt die Details -->
+      <div class="cal-grid">
+        {% for cell in cells %}
+          {% if cell.empty %}
+          <div class="cal-day cal-empty" aria-hidden="true"></div>
+          {% else %}
+          <a class="cal-day{% if cell.is_today %} cal-today{% endif %}"
+             href="{{ url_for('kalender', month=month_param, day=cell.iso) }}"
+             aria-label="{{ cell.iso }}, {{ cell.total }} Kalorien">
+            <span class="cal-num">{{ cell.day }}</span>
+            {% if cell.count > 0 %}
+            <span class="cal-kcal{% if cell.over_goal %} cal-over{% endif %}">{{ cell.total }} kcal</span>
+            {% else %}
+            <span class="cal-kcal cal-zero">–</span>
+            {% endif %}
+          </a>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- Tagesdetails: alle Einträge des angeklickten Tages -->
+      {% if day_is_valid %}
+      <div class="cal-details" id="cal-details">
+        <div class="cal-details-head">
+          <h4>{{ day_label }}</h4>
+          {% if day_count > 0 %}
+          <span class="cal-total-chip">{{ day_total }} kcal · {{ day_count }} Einträge</span>
+          {% else %}
+          <span class="cal-total-chip">0 kcal</span>
+          {% endif %}
+        </div>
+
+        {% if day_entries %}
+          {% for entry in day_entries %}
+          <div class="cal-entry">
+            <span class="cal-entry-icon icon-{{ entry.meal_style }}">{{ entry.meal_icon }}</span>
+            <div class="cal-entry-body">
+              <div class="cal-entry-name">{{ entry.name }}</div>
+              <div class="cal-entry-meta">
+                {{ entry.meal }} · {{ entry.amount_display }} g ·
+                {{ "{:g}".format(entry.calories_per_100g) }} kcal/100 g
+              </div>
+            </div>
+            <span class="cal-entry-kcal">{{ entry.calories }} kcal</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty-state">
+            An diesem Tag wurden noch keine Einträge gespeichert.
+          </div>
+        {% endif %}
+      </div>
+      {% else %}
+      <div class="cal-details" id="cal-details-hint">
+        <div class="empty-state">
+          Klicke auf einen Tag im Kalender, um alle Einträge dieses Tages zu sehen.
+        </div>
+      </div>
+      {% endif %}
+
+    </section>
+
+{% endblock %}
