@@ -1,0 +1,17 @@
+# Konfiguration für Render (kostenloses Hosting).
+# Render liest diese Datei automatisch aus und startet die App danach.
+services:
+  - type: web
+    name: kalorienzaehler
+    runtime: python
+    # Bibliotheken aus requirements.txt installieren
+    buildCommand: pip install -r requirements.txt
+    # App mit gunicorn starten (Produktions-Webserver für Flask)
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      # Zufälliger geheimer Schlüssel für Flask-Meldungen (wird automatisch erzeugt)
+      - key: SECRET_KEY
+        generateValue: true
+      # Debug-Modus im Internet ausschalten
+      - key: FLASK_DEBUG
+        value: "0"
