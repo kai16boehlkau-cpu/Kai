@@ -191,6 +191,27 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   background: var(--accent);
 }
 
+/* Hamburger-Button: nur auf kleinen Bildschirmen sichtbar */
+.nav-toggle {
+  display: none;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.nav-toggle:hover {
+  background: var(--surface-2);
+  border-color: var(--violet);
+}
+
 /* ---------- 4) Hero / Begrüßung ---------- */
 .hero {
   display: grid;
@@ -1162,7 +1183,33 @@ input[type="date"] { max-width: 100%; }
   .hero-side { align-items: flex-start; }
   .day-nav { justify-content: flex-start; }
 
-  .main-nav { display: none; }          /* auf kleinen Bildschirmen ausblenden */
+  /* Navigation wird zum aufklappbaren Menue (Hamburger) */
+  .nav-toggle { display: grid; }
+
+  .main-nav {
+    display: none;
+    position: absolute;
+    top: var(--header-h);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: rgba(10, 11, 16, 0.97);
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.5);
+  }
+
+  .main-nav.open { display: flex; }
+
+  .main-nav a {
+    padding: 13px 16px;
+    font-size: 0.95rem;
+    text-align: center;
+    border-radius: 12px;
+  }
 
   .meal-bar-row { grid-template-columns: 118px 1fr 84px; }
   .entry-item { flex-wrap: wrap; }
@@ -1178,6 +1225,17 @@ input[type="date"] { max-width: 100%; }
   .meal-chips { grid-template-columns: 1fr; }
   .container { padding: 20px 14px 44px; }
   .card { padding: 18px; }
+
+  /* Touch: groessere Ziele, keine Auto-Zoom von iOS beim Tippen */
+  .icon-btn { min-width: 44px; height: 44px; }
+  input, select { font-size: 16px; }
+  .brand-name { font-size: 0.9rem; letter-spacing: 0.08em; }
+  .header-inner { padding: 0 14px; gap: 10px; }
+  .modal { padding: 18px; border-radius: 18px; }
+  .modal-overlay { padding: 12px; }
+  .day-nav { gap: 6px; }
+  .start-form { flex-direction: column; align-items: stretch; }
+  .start-form .btn { width: 100%; }
 }
 
 /* ---------- 17) Ladebildschirm mit Logo-Animation ----------
@@ -1717,4 +1775,23 @@ code {
 @media (max-width: 540px) {
   .cal-day { min-height: 48px; }
   .cal-kcal { display: none; }
+}
+
+/* ---------- 25) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
+@media (max-width: 540px) {
+  .start-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .start-form .form-field {
+    flex: 0 0 auto;      /* in der Spaltenansicht keine 240px Hoehe erzwingen */
+    max-width: none;
+    width: 100%;
+  }
+
+  .start-form .btn { width: 100%; }
+
+  .settings-form { flex-direction: column; align-items: stretch; }
+  .settings-form .btn { width: 100%; }
 }

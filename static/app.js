@@ -125,6 +125,27 @@ function showToast(message, type) {
 }
 
 /* ------------------------------------------------------------
+   2b) Handy: Hamburger-Menue oeffnen und schliessen
+   ------------------------------------------------------------ */
+var navToggle = document.getElementById("nav-toggle");
+var mainNav = document.querySelector(".main-nav");
+if (navToggle && mainNav) {
+  navToggle.addEventListener("click", function () {
+    var open = mainNav.classList.toggle("open");
+    navToggle.textContent = open ? "✕" : "☰";
+    navToggle.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  // Nach dem Klick auf einen Menuepunkt wieder zuklappen.
+  mainNav.querySelectorAll("a").forEach(function (link) {
+    link.addEventListener("click", function () {
+      mainNav.classList.remove("open");
+      navToggle.textContent = "☰";
+      navToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+}
+
+/* ------------------------------------------------------------
    3) Ladebildschirm: Logo fliegt in die Kopfzeile
    ------------------------------------------------------------ */
 var splash = document.getElementById("splash");
