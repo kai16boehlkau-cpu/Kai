@@ -402,7 +402,6 @@ function renderDiary(stats) {
     li.setAttribute("data-name", String(entry.name).toLowerCase());
     li.setAttribute("data-meal", entry.meal);
 
-    var grams = "{:g}".replace("{}", "") === "" ? "" : "";
     var amount = Number(entry.amount_grams);
 
     li.innerHTML =
