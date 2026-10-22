@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CALORIE TRACKER – Mein Ernährungstagebuch</title>
+  <meta name="description" content="Kalorienzähler als Schulprojekt mit JavaScript und localStorage.">
+  <link rel="icon" type="image/png" href="static/logo.png">
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+  <!-- Ladebildschirm: großes Logo, das kleinerfliegt -->
+  <div id="splash">
+    <img class="splash-logo" id="splash-logo" src="static/logo.png" alt="">
+    <div class="splash-name">CALORIE <span>TRACKER</span></div>
+  </div>
+
+  <!-- Benachrichtigungen (Meldungen aus JavaScript) -->
+  <div id="toast-area" aria-live="polite"></div>
+
+  <!-- Kopfbereich: Logo + Navigation -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <img src="static/logo.png" alt="Logo des Calorie Trackers">
+        </span>
+        <span class="brand-name">CALORIE <span>TRACKER</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="index.html#hinzufuegen">Eintragen</a>
+        <a href="index.html#stagebuch">Tagebuch</a>
+        <a href="einstellungen.html">Einstellungen</a>
+        <a href="datenbank.html">Datenbank</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- HERO: Begrüßung, Datum und Tageswechsel -->
+    <section class="hero" id="dashboard">
+      <div class="hero-text">
+        <span class="kicker">Übersicht</span>
+        <h2>Willkommen zurück! 👋</h2>
+        <p class="hero-sub">Behalte den Überblick über deine Mahlzeiten – alles bleibt lokal auf deinem Computer.</p>
+        <div class="hero-date" id="date-label">📅</div>
+      </div>
+
+      <div class="hero-side">
+        <span class="status-chip" id="goal-chip">⚡</span>
+
+        <div class="day-nav">
+          <button type="button" class="icon-btn" id="day-prev" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</button>
+          <div class="date-form">
+            <input type="date" id="date-picker" aria-label="Datum wählen">
+          </div>
+          <button type="button" class="icon-btn" id="day-next" title="Nächster Tag" aria-label="Nächster Tag">›</button>
+          <button type="button" class="btn btn-sm btn-soft" id="today-btn" hidden>Zu heute</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUR BEIM ERSTEN MAL: Tagesziel festlegen -->
+    <section class="card start-card" id="ziel-start" hidden>
+      <div class="start-head">
+        <span class="start-step">Schritt 1 · einmalig</span>
+        <h2>Als Erstes: Dein persönliches Tagesziel festlegen</h2>
+        <p class="section-hint">
+          Gib einmalig ein, wie viele Kalorien du pro Tag essen möchtest.
+          Danach findest du das Ziel nur noch auf der Seite
+          <strong>„Einstellungen"</strong> wieder - hier auf der Startseite
+          kann es dann nicht mehr versehentlich geändert werden.
+          Der Wert 2000 kcal ist ein technischer Standardwert und keine
+          Ernährungsempfehlung.
+        </p>
+      </div>
+
+      <form class="start-form" id="start-goal-form">
+        <div class="form-field">
+          <label for="start_goal">Tagesziel in kcal (800 – 6000)</label>
+          <input type="number" id="start_goal" min="800" max="6000" step="1" value="2000" required>
+        </div>
+        <button type="submit" class="btn">Tagesziel speichern</button>
+      </form>
+    </section>
+
+    <!-- DASHBOARD: die wichtigsten Zahlen des Tages -->
+    <section class="kpi-grid" aria-label="Tageszahlen">
+
+      <article class="card kpi kpi-ring fade-in">
+        <span class="kpi-label">Fortschritt zum Ziel</span>
+        <div class="ring-wrap">
+          <svg viewBox="0 0 120 120" class="progress-ring" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle id="ring-progress" class="ring-fg" cx="60" cy="60" r="52" data-percent="0"></circle>
+          </svg>
+          <div class="ring-label">
+            <div><strong id="percent-value">0</strong><span class="ring-unit">%</span></div>
+            <small>von <span id="ring-goal">2000</span> kcal</small>
+          </div>
+        </div>
+        <p class="kpi-foot" id="ring-foot"></p>
+      </article>
+
+      <article class="card kpi fade-in delay-1">
+        <span class="kpi-icon icon-pink">🍎</span>
+        <span class="kpi-label">Aufgenommen</span>
+        <strong class="kpi-value" id="stat-total" data-value="0">0</strong>
+        <span class="kpi-unit" id="stat-total-sub">kcal</span>
+      </article>
+
+      <article class="card kpi fade-in delay-2">
+        <span class="kpi-icon icon-violet">🎯</span>
+        <span class="kpi-label">Tagesziel</span>
+        <strong class="kpi-value" id="kpi-goal">2000</strong>
+        <span class="kpi-unit">kcal</span>
+        <a class="kpi-link" id="kpi-goal-link" href="einstellungen.html">Ändern in den Einstellungen →</a>
+      </article>
+
+      <article class="card kpi fade-in delay-3">
+        <span class="kpi-icon icon-blue" id="remain-icon">⚡</span>
+        <span class="kpi-label" id="remain-label">Noch verbleibend</span>
+        <strong class="kpi-value" id="stat-remaining">0</strong>
+        <span class="kpi-unit">kcal</span>
+      </article>
+
+      <article class="card kpi fade-in delay-4">
+        <span class="kpi-icon icon-green">📋</span>
+        <span class="kpi-label">Einträge heute</span>
+        <strong class="kpi-value" id="stat-count">0</strong>
+        <span class="kpi-unit">Lebensmittel</span>
+      </article>
+    </section>
+
+    <!-- MAHLZEITEN-VERGLEICH -->
+    <section class="card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Kalorien im Vergleich</h2>
+          <p class="section-hint">Die Kalorien aller vier Mahlzeiten des gewählten Tages im direkten Vergleich.</p>
+        </div>
+        <span class="head-badge">🏁 Tagesbilanz</span>
+      </div>
+
+      <div class="meal-bars" id="meal-bars"></div>
+    </section>
+
+    <!-- ZWEI SPALTEN: Eintragen + Tagesziel -->
+    <div class="split">
+
+      <section class="card fade-in" id="hinzufuegen">
+        <div class="card-head">
+          <div>
+            <h2>Lebensmittel hinzufügen</h2>
+            <p class="section-hint">Schnellauswahl antippen, Menge anpassen, speichern.</p>
+          </div>
+          <span class="head-badge">➕ Neuer Eintrag</span>
+        </div>
+
+        <div class="preset-list">
+          <button type="button" class="preset" data-name="Apfel" data-cal="52">🍎 Apfel <small>52</small></button>
+          <button type="button" class="preset" data-name="Banane" data-cal="89">🍌 Banane <small>89</small></button>
+          <button type="button" class="preset" data-name="Haferflocken" data-cal="379">🥣 Haferflocken <small>379</small></button>
+          <button type="button" class="preset" data-name="Reis" data-cal="130">🍚 Reis <small>130</small></button>
+          <button type="button" class="preset" data-name="Brot" data-cal="265">🍞 Brot <small>265</small></button>
+          <button type="button" class="preset" data-name="Ei" data-cal="143">🥚 Ei <small>143</small></button>
+          <button type="button" class="preset" data-name="Naturjoghurt" data-cal="59">🥛 Naturjoghurt <small>59</small></button>
+        </div>
+        <p class="preset-note">Werte pro 100 g sind Näherungswerte – der tatsächliche Wert kann je Produkt variieren.</p>
+
+        <form class="stack-form" id="add-form">
+          <div class="form-grid">
+            <div class="form-field span-2">
+              <label for="name">Name des Lebensmittels</label>
+              <input type="text" id="name" name="name" maxlength="80" placeholder="z. B. Apfel" required>
+            </div>
+
+            <div class="form-field">
+              <label for="calories_per_100g">Kalorien pro 100 g</label>
+              <input type="number" id="calories_per_100g" name="calories_per_100g" min="1" max="900" step="0.1" placeholder="z. B. 52" required>
+            </div>
+
+            <div class="form-field">
+              <label for="amount_grams">Menge in Gramm</label>
+              <input type="number" id="amount_grams" name="amount_grams" min="1" max="5000" step="1" placeholder="z. B. 150" required>
+            </div>
+
+            <div class="form-field">
+              <label for="meal">Mahlzeit</label>
+              <select id="meal" name="meal" required>
+                <option>Frühstück</option>
+                <option>Mittagessen</option>
+                <option>Abendessen</option>
+                <option>Snack</option>
+              </select>
+            </div>
+
+            <div class="form-field">
+              <label for="entry-date">Datum</label>
+              <input type="date" id="entry-date" name="date" required>
+            </div>
+
+            <div class="form-field span-2">
+              <label>Berechnete Kalorien der Portion</label>
+              <div class="calorie-preview" id="calorie-preview">– kcal</div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-wide">Eintrag speichern</button>
+        </form>
+      </section>
+
+      <div class="split-side">
+        <section class="card fade-in" id="ziel">
+          <div class="card-head">
+            <div>
+              <h2>Persönliches Tagesziel</h2>
+              <p class="section-hint" id="goal-hint">Aktuell <strong>2000 kcal</strong> pro Tag.</p>
+            </div>
+            <span class="head-badge">🎯</span>
+          </div>
+
+          <p class="goal-readonly">
+            <strong id="goal-current">2000</strong> <span>kcal pro Tag</span>
+          </p>
+
+          <a class="btn btn-soft btn-wide" id="goal-edit-link" href="einstellungen.html">Ändern auf der Seite Einstellungen</a>
+
+          <p class="fineprint">
+            Das Ziel lässt sich nach der Einrichtung nur noch auf der separaten
+            Seite <strong>Einstellungen</strong> verändern - so verhinderst du,
+            dass du es beim Tracken aus Versehen änderst.
+            2000 kcal sind ein technischer Standardwert und keine Ernährungsempfehlung.
+          </p>
+        </section>
+
+        <section class="card fade-in">
+          <div class="card-head">
+            <div>
+              <h2>Bilanz nach Mahlzeit</h2>
+              <p class="section-hint" id="chips-hint">Kalorien je Mahlzeit.</p>
+            </div>
+          </div>
+
+          <div class="meal-chips" id="meal-chips"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- ERNÄHRUNGSTAGEBUCH -->
+    <section class="card fade-in" id="stagebuch">
+      <div class="card-head">
+        <div>
+          <h2>Mein Ernährungstagebuch</h2>
+          <p class="section-hint" id="diary-hint">Alle Einträge</p>
+        </div>
+        <span class="head-badge" id="diary-badge">0 Einträge</span>
+      </div>
+
+      <div class="diary-tools">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="search-input" placeholder="Name suchen …" aria-label="Im Tagebuch suchen">
+        </div>
+
+        <div class="filter-chips" role="group" aria-label="Nach Mahlzeit filtern">
+          <button type="button" class="filter-btn active" data-filter="alle">Alle</button>
+          <button type="button" class="filter-btn" data-filter="Frühstück">🍳 Frühstück</button>
+          <button type="button" class="filter-btn" data-filter="Mittagessen">🍛 Mittagessen</button>
+          <button type="button" class="filter-btn" data-filter="Abendessen">🍽️ Abendessen</button>
+          <button type="button" class="filter-btn" data-filter="Snack">🍎 Snack</button>
+        </div>
+
+        <button type="button" class="btn btn-sm btn-soft" id="show-all-btn">Filter zurücksetzen</button>
+      </div>
+
+      <div class="empty-state" id="empty-state">
+        <span class="empty-icon">🥗</span>
+        <h3>Noch keine Mahlzeiten eingetragen</h3>
+        <p>Füge oben dein erstes Lebensmittel hinzu – dann erscheint es hier.</p>
+        <a class="btn btn-sm" href="#hinzufuegen">Jetzt hinzufügen</a>
+      </div>
+
+      <ul class="entry-list" id="entry-list" hidden></ul>
+
+      <div class="empty-state" id="no-results" hidden>
+        <span class="empty-icon">🔍</span>
+        <h3>Keine Treffer</h3>
+        <p>Zu dieser Suche oder diesem Filter wurde nichts gefunden.</p>
+      </div>
+    </section>
+
+    <!-- DIALOG: Eintrag bearbeiten -->
+    <div class="modal-overlay" id="edit-modal" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+        <div class="modal-head">
+          <h3 id="edit-title">✏️ Eintrag bearbeiten</h3>
+          <button type="button" class="icon-btn" id="modal-close" aria-label="Dialog schließen">✕</button>
+        </div>
+
+        <form id="edit-form" class="stack-form">
+          <div class="form-field">
+            <label for="edit-name">Name des Lebensmittels</label>
+            <input type="text" id="edit-name" name="name" maxlength="80" required>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="edit-cal">Kalorien pro 100 g</label>
+              <input type="number" id="edit-cal" name="calories_per_100g" min="1" max="900" step="0.1" required>
+            </div>
+            <div class="form-field">
+              <label for="edit-amount">Menge in Gramm</label>
+              <input type="number" id="edit-amount" name="amount_grams" min="1" max="5000" step="1" required>
+            </div>
+            <div class="form-field">
+              <label for="edit-meal">Mahlzeit</label>
+              <select id="edit-meal" name="meal" required>
+                <option>Frühstück</option>
+                <option>Mittagessen</option>
+                <option>Abendessen</option>
+                <option>Snack</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label for="edit-date">Datum</label>
+              <input type="date" id="edit-date" name="date" required>
+            </div>
+          </div>
+
+          <p class="fineprint">Die Kalorien der Portion werden automatisch neu berechnet.</p>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-soft" id="modal-cancel">Abbrechen</button>
+            <button type="submit" class="btn">Änderungen speichern</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>CALORIE TRACKER</strong> · Schulprojekt mit Python, Flask &amp; SQLite · Alle Daten bleiben lokal auf dem Computer.</p>
+  </footer>
+
+  <script src="static/app.js"></script>
+</body>
+</html>

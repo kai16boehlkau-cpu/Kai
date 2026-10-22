@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Datenbank – CALORIE TRACKER</title>
+  <link rel="icon" type="image/png" href="static/logo.png">
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+  <div id="splash">
+    <img class="splash-logo" id="splash-logo" src="static/logo.png" alt="">
+    <div class="splash-name">CALORIE <span>TRACKER</span></div>
+  </div>
+
+  <div id="toast-area" aria-live="polite"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <img src="static/logo.png" alt="Logo des Calorie Trackers">
+        </span>
+        <span class="brand-name">CALORIE <span>TRACKER</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="index.html">Dashboard</a>
+        <a href="index.html#hinzufuegen">Eintragen</a>
+        <a href="index.html#stagebuch">Tagebuch</a>
+        <a href="einstellungen.html">Einstellungen</a>
+        <a href="datenbank.html" class="active">Datenbank</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero" id="datenbank">
+      <div class="hero-text">
+        <span class="kicker">Datenbank</span>
+        <h2>🗄️ So sieht die Datenbank aus</h2>
+        <p class="hero-sub">
+          Die lokale Version des Kalorienzählers speichert alles in einer
+          SQLite-Datenbank (<code>database.db</code>) direkt neben der
+          Programmdatei. Es werden zwei Tabellen verwendet.
+        </p>
+      </div>
+      <div class="hero-side">
+        <span class="status-chip">💾 SQLite · lokal</span>
+      </div>
+    </section>
+
+    <div class="db-explain">
+      <div class="db-chip chip-pk">
+        <strong>🔑 Primärschlüssel</strong>
+        <span>Spalte <code>id</code> – jede Zeile bekommt eine eindeutige Nummer. Damit kann Flask genau einen Eintrag ändern oder löschen.</span>
+      </div>
+      <div class="db-chip">
+        <strong>📝 TEXT</strong>
+        <span>Textfeld – z.&nbsp;B. der Name „Apfel“ oder das Datum „2026-10-22“.</span>
+      </div>
+      <div class="db-chip">
+        <strong>🔢 REAL</strong>
+        <span>Zahl mit Nachkommastellen – z.&nbsp;B. 379,5 kcal pro 100 g.</span>
+      </div>
+      <div class="db-chip">
+        <strong>🔢 INTEGER</strong>
+        <span>Ganze Zahl – z.&nbsp;B. die berechneten Kalorien der Portion (227).</span>
+      </div>
+    </div>
+
+    <section class="card db-card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Tabellen-Diagramm</h2>
+          <p class="section-hint">So ist <code>database.db</code> aufgebaut.</p>
+        </div>
+        <span class="head-badge badge-hl">⚠️ Prüfungsrelevant</span>
+      </div>
+
+      <div class="db-diagram">
+
+        <div class="db-table db-entries">
+          <div class="db-table-title">
+            <span>entries</span>
+            <small>– alle Mahlzeiten-Einträge</small>
+          </div>
+          <ul class="db-cols">
+            <li><span class="db-col">id</span><span class="db-type">INTEGER</span><i class="pk-pill">PK</i></li>
+            <li><span class="db-col">name</span><span class="db-type">TEXT</span><span></span></li>
+            <li><span class="db-col">calories_per_100g</span><span class="db-type">REAL</span><span></span></li>
+            <li><span class="db-col">amount_grams</span><span class="db-type">REAL</span><span></span></li>
+            <li><span class="db-col">calories</span><span class="db-type">INTEGER</span><span></span></li>
+            <li><span class="db-col">meal</span><span class="db-type">TEXT</span><span></span></li>
+            <li><span class="db-col">date</span><span class="db-type">TEXT</span><span></span></li>
+            <li><span class="db-col">created_at</span><span class="db-type">TEXT</span><span></span></li>
+          </ul>
+          <p class="db-table-note">
+            <code>calories</code> wird in Python berechnet:
+            <code>kcal_pro_100g × gramm / 100</code>.
+          </p>
+        </div>
+
+        <div class="db-vs">
+          <span class="db-vs-icon">🔗</span>
+          <strong>verknüpft</strong>
+          <small>
+            Die Einstellungen liegen bewusst in einer eigenen Tabelle:
+            So bleibt das Tagesziel (<code>settings.daily_goal</code>)
+            getrennt von den Mahlzeiten (<code>entries</code>).
+          </small>
+        </div>
+
+        <div class="db-table db-settings">
+          <div class="db-table-title">
+            <span>settings</span>
+            <small>– Tagesziel &amp; Status</small>
+          </div>
+          <ul class="db-cols">
+            <li><span class="db-col">id</span><span class="db-type">INTEGER</span><i class="pk-pill">PK</i></li>
+            <li><span class="db-col">daily_goal</span><span class="db-type">INTEGER</span><span></span></li>
+            <li><span class="db-col">goal_set</span><span class="db-type">INTEGER</span><span></span></li>
+          </ul>
+          <p class="db-table-note">
+            <code>goal_set</code>: <strong>0</strong> = Ziel noch nicht festgelegt,
+            <strong>1</strong> = vom Benutzer gespeichert.
+            Es gibt immer nur <strong>eine</strong> Zeile (<code>id = 1</code>).
+          </p>
+        </div>
+      </div>
+
+      <p class="db-legend">
+        <strong>Zusammenfassung:</strong> Jeder Lebensmittel-Eintrag ist eine
+        Zeile in <code>entries</code>. Das persönliche Tagesziel steht als
+        einzelne Zeile in <code>settings</code>. Flask liest beide Tabellen mit
+        parametrisierten SQL-Abfragen (Platzhalter <code>?</code>), damit keine
+        SQL-Injection möglich ist.
+      </p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>CALORIE TRACKER</strong> · Schulprojekt mit Python, Flask &amp; SQLite · Alle Daten bleiben lokal auf dem Computer.</p>
+  </footer>
+
+  <script src="static/app.js"></script>
+</body>
+</html>

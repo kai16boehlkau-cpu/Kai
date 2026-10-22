@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Einstellungen – CALORIE TRACKER</title>
+  <link rel="icon" type="image/png" href="static/logo.png">
+  <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+
+  <div id="splash">
+    <img class="splash-logo" id="splash-logo" src="static/logo.png" alt="">
+    <div class="splash-name">CALORIE <span>TRACKER</span></div>
+  </div>
+
+  <div id="toast-area" aria-live="polite"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">
+          <img src="static/logo.png" alt="Logo des Calorie Trackers">
+        </span>
+        <span class="brand-name">CALORIE <span>TRACKER</span></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Hauptnavigation">
+        <a href="index.html">Dashboard</a>
+        <a href="index.html#hinzufuegen">Eintragen</a>
+        <a href="index.html#stagebuch">Tagebuch</a>
+        <a href="einstellungen.html" class="active">Einstellungen</a>
+        <a href="datenbank.html">Datenbank</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="hero" id="einstellungen">
+      <div class="hero-text">
+        <span class="kicker">Einstellungen</span>
+        <h2>⚙️ Tagesziel ändern</h2>
+        <p class="hero-sub">Hier stellst du dein persönliches Kalorienziel pro Tag ein.</p>
+      </div>
+    </section>
+
+    <section class="card fade-in" id="ziel-aendern">
+      <div class="goal-readonly">
+        <strong id="settings-current">2000</strong>
+        <span>aktuell gespeichert (kcal pro Tag)</span>
+      </div>
+
+      <form class="start-form" id="settings-form">
+        <div class="form-field">
+          <label for="settings_goal">Tagesziel in kcal (800 – 6000)</label>
+          <input type="number" id="settings_goal" min="800" max="6000" step="1" value="2000" required>
+        </div>
+
+        <button type="submit" class="btn">Tagesziel speichern</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>CALORIE TRACKER</strong> · Schulprojekt mit Python, Flask &amp; SQLite · Alle Daten bleiben lokal auf dem Computer.</p>
+  </footer>
+
+  <script src="static/app.js"></script>
+</body>
+</html>
