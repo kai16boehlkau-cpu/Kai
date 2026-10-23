@@ -379,12 +379,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   color: var(--muted-2);
 }
 
-.kpi-foot {
-  margin: 10px 0 0;
-  font-size: 0.86rem;
-  color: var(--muted);
-}
-
 .ring-wrap {
   position: relative;
   width: 180px;
@@ -711,12 +705,6 @@ input[type="date"] { max-width: 100%; }
 }
 
 .preset:active { transform: translateY(0); }
-
-.preset-note {
-  margin: 10px 0 18px;
-  font-size: 0.76rem;
-  color: var(--muted-2);
-}
 
 /* Bilanz-Chips pro Mahlzeit */
 .meal-chips {

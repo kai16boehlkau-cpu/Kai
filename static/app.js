@@ -225,12 +225,6 @@ function dayStats(iso) {
 /* ------------------------------------------------------------
    5) Seite zeichnen (alle Werte aktualisieren)
    ------------------------------------------------------------ */
-function goalMessage(total, remaining) {
-  if (total >= dailyGoal) return "Tagesziel erreicht - super gemacht!";
-  if (remaining > 0) return "Noch " + remaining + " kcal bis zu deinem Ziel.";
-  return "Ziel unterschritten.";
-}
-
 function animateNumber(element, target, duration) {
   if (!element) return;
   if (reduceMotion) { element.textContent = String(target); return; }
@@ -251,7 +245,6 @@ function renderDay() {
   var remaining = dailyGoal - stats.total;
   var percent = dailyGoal > 0 ? Math.round(stats.total / dailyGoal * 100) : 0;
   var ringPercent = Math.min(percent, 100);
-  var message = goalMessage(stats.total, remaining);
 
   var picker = document.getElementById("date-picker");
   if (picker && picker.value !== selectedDate) picker.value = selectedDate;
@@ -276,11 +269,6 @@ function renderDay() {
   if (percentLabel) animateNumber(percentLabel, ringPercent, 900);
   var ringGoal = document.getElementById("ring-goal");
   if (ringGoal) ringGoal.textContent = String(dailyGoal);
-  var ringFoot = document.getElementById("ring-foot");
-  if (ringFoot) {
-    ringFoot.textContent = message;
-    ringFoot.classList.toggle("text-ok", stats.total >= dailyGoal);
-  }
 
   // KPI-Karten
   var totalLabel = document.getElementById("stat-total");

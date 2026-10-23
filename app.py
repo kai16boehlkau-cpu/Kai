@@ -364,11 +364,6 @@ def index():
         meal_bars=meal_bars,
         meals=MEALS,
         goal_reached=total_calories >= daily_goal,
-        goal_message=(
-            "Tagesziel erreicht - super gemacht!"
-            if total_calories >= daily_goal
-            else ("Noch {} kcal bis zu deinem Ziel.".format(remaining) if remaining > 0 else "Ziel unterschritten.")
-        ),
         active_page="dashboard",
     )
 
