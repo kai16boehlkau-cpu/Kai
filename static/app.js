@@ -678,15 +678,12 @@ var settingsForm = document.getElementById("settings-form");
 if (settingsForm) {
   var settingsInput = document.getElementById("settings_goal");
   if (settingsInput) settingsInput.value = String(dailyGoal);
-  var currentGoal = document.getElementById("settings-current");
-  if (currentGoal) currentGoal.textContent = String(dailyGoal);
 
   settingsForm.addEventListener("submit", function (event) {
     event.preventDefault();
     var error = saveGoal(settingsInput.value);
     if (error) { showToast(error, "error"); return; }
     showToast("Tagesziel auf " + dailyGoal + " kcal gespeichert.", "success");
-    if (currentGoal) currentGoal.textContent = String(dailyGoal);
   });
 }
 

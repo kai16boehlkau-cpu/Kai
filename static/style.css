@@ -1791,7 +1791,4 @@ code {
   }
 
   .start-form .btn { width: 100%; }
-
-  .settings-form { flex-direction: column; align-items: stretch; }
-  .settings-form .btn { width: 100%; }
 }

@@ -47,23 +47,16 @@
 
   <main class="container">
 
-    <section class="hero" id="einstellungen">
-      <div class="hero-text">
-        <span class="kicker">Einstellungen</span>
-        <h2>⚙️ Tagesziel ändern</h2>
-        <p class="hero-sub">Hier stellst du dein persönliches Kalorienziel pro Tag ein.</p>
-      </div>
-    </section>
-
     <section class="card fade-in" id="ziel-aendern">
-      <div class="goal-readonly">
-        <strong id="settings-current">2000</strong>
-        <span>aktuell gespeichert (kcal pro Tag)</span>
+      <div class="card-head">
+        <div>
+          <h2>Tagesziel</h2>
+        </div>
       </div>
 
       <form class="start-form" id="settings-form">
         <div class="form-field">
-          <label for="settings_goal">Tagesziel in kcal (800 – 6000)</label>
+          <label for="settings_goal">Kalorien pro Tag (800 – 6000)</label>
           <input type="number" id="settings_goal" min="800" max="6000" step="1" value="2000" required>
         </div>
 

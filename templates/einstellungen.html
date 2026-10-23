@@ -5,20 +5,13 @@
 {% block content %}
 
     <!-- ======================================================
-         EINSTELLUNGEN: nur das Kalorienziel ändern
+         EINSTELLUNGEN: nur das Kalorienziel aendern
          ====================================================== -->
-    <section class="hero" id="einstellungen">
-      <div class="hero-text">
-        <span class="kicker">Einstellungen</span>
-        <h2>⚙️ Tagesziel ändern</h2>
-        <p class="hero-sub">Hier stellst du dein persönliches Kalorienziel pro Tag ein.</p>
-      </div>
-    </section>
-
     <section class="card fade-in" id="ziel-aendern">
-      <div class="goal-readonly">
-        <strong>{{ daily_goal }}</strong>
-        <span>aktuell gespeichert (kcal pro Tag)</span>
+      <div class="card-head">
+        <div>
+          <h2>Tagesziel</h2>
+        </div>
       </div>
 
       <form method="POST" action="/update_goal" class="start-form">
@@ -26,7 +19,7 @@
         <input type="hidden" name="date" value="{{ selected_date }}">
 
         <div class="form-field">
-          <label for="settings_goal">Tagesziel in kcal (800 – 6000)</label>
+          <label for="settings_goal">Kalorien pro Tag (800 – 6000)</label>
           <input type="number" id="settings_goal" name="daily_goal"
                  min="800" max="6000" step="1" value="{{ daily_goal }}" required>
         </div>
