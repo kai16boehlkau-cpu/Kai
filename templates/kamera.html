@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Kamera – CALORIE TRACKER</title>{% endblock %}
+
+{% block content %}
+
+    <!-- ======================================================
+         KAMERA: live Bild, Foto aufnehmen, KI-Analyse
+         ====================================================== -->
+
+    <!-- ERST WENN KEIN KEY DA IST: API-Key eintragen -->
+    <section class="card fade-in" id="cam-key-card" hidden>
+      <div class="card-head">
+        <div>
+          <h2>KI einschalten: API-Key eintragen</h2>
+          <p class="section-hint">Einmalig nötig - danach merkt sich dein Browser den Key.</p>
+        </div>
+        <span class="head-badge">Einmalig</span>
+      </div>
+
+      <form id="key-form" class="stack-form">
+        <div class="form-field">
+          <label for="gemini_key">Google-Gemini API-Key</label>
+          <input type="password" id="gemini_key" name="gemini_key"
+                 placeholder="AIza ..." autocomplete="off" required>
+        </div>
+        <p class="fineprint">
+          Key holen unter
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/app/apikey</a>
+          (Google-Konto anmelden, "Create API Key" klicken) und hier einfuegen.
+          Der Key wird nur in diesem Browser gespeichert und nie an den Server geschickt.
+        </p>
+        <div class="form-footer">
+          <div class="calorie-preview">Danach startet die Kamera</div>
+          <button type="submit" class="btn">API-Key speichern</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- KAMERA -->
+    <section class="card fade-in" id="kamera-card">
+      <div class="card-head">
+        <div>
+          <h2>Essen fotografieren</h2>
+          <p class="section-hint">Halte die Kamera auf dein Teller, mache ein Foto - die KI schätzt Kalorien.</p>
+        </div>
+        <span class="head-badge">KI-Analyse</span>
+      </div>
+
+      <div class="cam-stage" id="cam-stage" hidden>
+        <video id="cam-video" playsinline autoplay muted></video>
+        <img id="cam-shot" alt="Aufgenommenes Foto" hidden>
+        <div class="cam-placeholder" id="cam-placeholder">Kamera wird gestartet ...</div>
+      </div>
+
+      <div class="cam-error" id="cam-error" hidden></div>
+
+      <div class="cam-actions" id="cam-actions" hidden>
+        <button type="button" class="btn" id="cam-capture">Foto aufnehmen</button>
+        <button type="button" class="btn" id="cam-analyze" hidden>Analysieren</button>
+        <button type="button" class="btn btn-soft cam-retake-btn" id="cam-retake" hidden>Neu aufnehmen</button>
+      </div>
+    </section>
+
+    <!-- ERGEBNIS: Beschwerde oder Trefferliste -->
+    <section class="card fade-in" id="cam-result-card" hidden>
+      <div class="card-head">
+        <div>
+          <h2>Ergebnis der KI</h2>
+          <p class="section-hint" id="cam-result-hint"></p>
+        </div>
+        <span class="head-badge" id="cam-result-badge" hidden></span>
+      </div>
+
+      <div class="empty-state" id="cam-nofood" hidden>
+        <span class="empty-icon">🙅</span>
+        <h3>Das ist kein Essen!</h3>
+        <p id="cam-nofood-reason"></p>
+        <a class="btn btn-sm cam-retake-btn" href="#kamera-card">Neues Foto machen</a>
+      </div>
+
+      <div id="cam-food" hidden>
+        <div id="cam-food-list"></div>
+
+        <div class="cam-total">
+          <span>Geschätzt gesamt</span>
+          <strong id="cam-total">0 kcal</strong>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="cam-meal">Mahlzeit</label>
+            <select id="cam-meal">
+              <option>Frühstück</option>
+              <option>Mittagessen</option>
+              <option>Abendessen</option>
+              <option>Snack</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="cam-date">Datum</label>
+            <input type="date" id="cam-date" required>
+          </div>
+        </div>
+
+        <div class="cam-actions">
+          <button type="button" class="btn" id="cam-save">Einträge speichern</button>
+          <button type="button" class="btn btn-soft cam-retake-btn" id="cam-retake2">Neues Foto</button>
+        </div>
+      </div>
+    </section>
+
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='kamera.js') }}"></script>
+{% endblock %}

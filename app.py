@@ -552,6 +552,20 @@ def kalender():
     )
 
 
+@app.route("/kamera")
+def kamera():
+    """Zeigt die Kamera-Seite mit KI-Lebensmittel-Analyse (Google Gemini).
+
+    Das Foto wird IM BROWSER an die Gemini-API geschickt, der Server
+    sieht es nie. Gespeichert wird ueber /add_entry wie immer hier.
+    """
+    return render_template(
+        "kamera.html",
+        goal_set=goal_is_set(),
+        active_page="kamera",
+    )
+
+
 @app.route("/add_entry", methods=["POST"])
 def add_entry():
     """Speichert einen neuen Lebensmittel-Eintrag in der Datenbank."""

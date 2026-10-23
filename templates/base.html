@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-backend="flask">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,6 +50,8 @@
            class="{{ 'active' if active_page|default('dashboard') == 'dashboard' else '' }}">Dashboard</a>
         <a href="{{ url_for('kalender') }}"
            class="{{ 'active' if active_page == 'kalender' else '' }}">Kalender</a>
+        <a href="{{ url_for('kamera') }}"
+           class="{{ 'active' if active_page == 'kamera' else '' }}">Kamera</a>
         <a href="{{ url_for('einstellungen') }}"
            class="{{ 'active' if active_page == 'einstellungen' else '' }}">Einstellungen</a>
         <a href="{{ url_for('datenbank') }}"
@@ -67,5 +69,6 @@
   </main>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

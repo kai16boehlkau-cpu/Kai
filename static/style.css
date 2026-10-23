@@ -1639,7 +1639,89 @@ code {
   .cal-kcal { display: none; }
 }
 
-/* ---------- 22) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
+/* ---------- 22) Kamera und KI-Analyse ---------- */
+/* Live-Bild bzw. aufgenommenes Foto im Rahmen */
+.cam-stage {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.cam-stage video,
+.cam-stage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Text mittig, solange noch kein Kamerabild da ist */
+.cam-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+/* Fehler unter der Kamera (kein Zugriff, keine Unterstuetzung, ...) */
+.cam-error {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: rgba(251, 113, 133, 0.12);
+  border: 1px solid rgba(251, 113, 133, 0.40);
+  border-radius: var(--radius-sm);
+  color: #fda4b5;
+  font-size: 0.88rem;
+}
+
+/* Button-Reihe unter der Kamera und im Ergebnis */
+.cam-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* Summen-Zeile im Analyse-Ergebnis */
+.cam-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  border-radius: var(--radius-sm);
+}
+
+.cam-total span {
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.cam-total strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* Gesperrte Buttons waehrend der KI-Analyse */
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+  transform: none;
+}
+
+/* ---------- 23) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
 @media (max-width: 540px) {
   .start-form {
     flex-direction: column;

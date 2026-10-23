@@ -414,5 +414,68 @@ navLinks.forEach(function (link) {
   });
 });
 
+/* ------------------------------------------------------------
+   12) Kamera & KI: API-Key in den Einstellungen speichern
+   (Nur der Browser speichert den Key - er steht NIE im Repository.)
+   ------------------------------------------------------------ */
+function escapeHTML(text) {
+  var div = document.createElement("div");
+  div.textContent = String(text);
+  return div.innerHTML;
+}
+
+function showToast(message, type) {
+  var area = document.getElementById("toast-area");
+  if (!area) return;
+  var toast = document.createElement("div");
+  toast.className = "toast toast-" + (type || "success");
+  toast.innerHTML =
+    '<span class="toast-icon">' + (type === "error" ? "!" : "✓") + "</span>" +
+    "<span>" + escapeHTML(message) + "</span>";
+  area.appendChild(toast);
+  setTimeout(function () {
+    toast.classList.add("hide");
+    setTimeout(function () { toast.remove(); }, 400);
+  }, 4000);
+}
+
+var STORE_GEMINI_KEY = "kzt_gemini_key";
+
+function loadGeminiKey() {
+  try { return (localStorage.getItem(STORE_GEMINI_KEY) || "").trim(); }
+  catch (error) { return ""; }
+}
+
+function saveGeminiKey(value) {
+  try { localStorage.setItem(STORE_GEMINI_KEY, value); return true; }
+  catch (error) { return false; }
+}
+
+var settingsKeyForm = document.getElementById("settings-key-form");
+if (settingsKeyForm) {
+  var keyInput = document.getElementById("settings_gemini_key");
+  var keyBadge = document.getElementById("key-badge");
+
+  // Vorhandenen Key ins maskierte Eingabefeld uebernehmen.
+  var savedKey = loadGeminiKey();
+  if (keyInput) keyInput.value = savedKey;
+  if (keyBadge) keyBadge.textContent = savedKey ? "aktiv" : "kein Key";
+
+  settingsKeyForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var value = keyInput ? keyInput.value.trim() : "";
+    if (value.length < 30) {
+      showToast("Das sieht nicht nach einem gueltigen API-Key aus.", "error");
+      return;
+    }
+    if (!saveGeminiKey(value)) {
+      showToast("Der Key konnte nicht gespeichert werden.", "error");
+      return;
+    }
+    if (keyBadge) keyBadge.textContent = "aktiv";
+    showToast("API-Key gespeichert.", "success");
+  });
+}
+
 // Am Ende: Kennzeichen, dass das komplette Skript fehlerfrei gelaufen ist.
 document.documentElement.setAttribute("data-js", "ok");

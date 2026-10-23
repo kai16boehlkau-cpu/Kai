@@ -28,4 +28,31 @@
       </form>
     </section>
 
+    <!-- ======================================================
+         KAMERA & KI: API-Key fuer die Lebensmittel-Analyse
+         ====================================================== -->
+    <section class="card fade-in" id="kamera-key">
+      <div class="card-head">
+        <div>
+          <h2>Kamera &amp; KI</h2>
+          <p class="section-hint">API-Key für die KI-Lebensmittel-Analyse auf der Seite „Kamera".</p>
+        </div>
+        <span class="head-badge" id="key-badge">–</span>
+      </div>
+
+      <form id="settings-key-form" class="stack-form">
+        <div class="form-field">
+          <label for="settings_gemini_key">Google-Gemini API-Key</label>
+          <input type="password" id="settings_gemini_key" name="gemini_key"
+                 placeholder="AIza ..." autocomplete="off" required>
+        </div>
+        <p class="fineprint">
+          Key holen unter
+          <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/app/apikey</a>.
+          Er wird nur in diesem Browser gespeichert – weder ins Repository noch an den Server geschickt.
+        </p>
+        <button type="submit" class="btn">API-Key speichern</button>
+      </form>
+    </section>
+
 {% endblock %}
