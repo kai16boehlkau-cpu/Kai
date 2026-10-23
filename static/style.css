@@ -323,7 +323,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
 
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
   gap: 16px;
   margin-bottom: 22px;
 }
@@ -338,7 +338,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
 }
 
 .kpi-ring {
-  grid-column: span 2;
   align-items: center;
   text-align: center;
 }
@@ -1159,8 +1158,7 @@ input[type="date"] { max-width: 100%; }
 
 /* ---------- 15) Responsive (Handy & Tablet) ---------- */
 @media (max-width: 1020px) {
-  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .kpi-ring { grid-column: span 2; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
   .split { grid-template-columns: 1fr; }
 }
 
@@ -1205,7 +1203,6 @@ input[type="date"] { max-width: 100%; }
 
 @media (max-width: 540px) {
   .kpi-grid { grid-template-columns: 1fr; }
-  .kpi-ring { grid-column: span 1; }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid .span-2 { grid-column: span 1; }
   .meal-chips { grid-template-columns: 1fr; }
