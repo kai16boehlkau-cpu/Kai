@@ -94,8 +94,14 @@
         <span class="kpi-label">Fortschritt zum Ziel</span>
         <div class="ring-wrap">
           <svg viewBox="0 0 120 120" class="progress-ring" aria-hidden="true">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#8b5cf6"></stop>
+                <stop offset="100%" stop-color="#e879f9"></stop>
+              </linearGradient>
+            </defs>
             <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
-            <circle id="ring-progress" class="ring-fg" cx="60" cy="60" r="52" data-percent="0"></circle>
+            <circle id="ring-progress" class="ring-fg" cx="60" cy="60" r="52" data-percent="0" stroke="url(#ringGrad)"></circle>
           </svg>
           <div class="ring-label">
             <div><strong id="percent-value">0</strong><span class="ring-unit">%</span></div>
