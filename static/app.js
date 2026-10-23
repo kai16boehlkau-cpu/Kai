@@ -253,10 +253,6 @@ function renderDay() {
   var ringPercent = Math.min(percent, 100);
   var message = goalMessage(stats.total, remaining);
 
-  // Kopfbereich
-  var dateLabel = document.getElementById("date-label");
-  if (dateLabel) dateLabel.textContent = "📅 " + formatDateDE(selectedDate);
-
   var picker = document.getElementById("date-picker");
   if (picker && picker.value !== selectedDate) picker.value = selectedDate;
 

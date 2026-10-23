@@ -3,11 +3,9 @@
 {% block content %}
 
     <!-- ======================================================
-         DATUMSLEISTE: Datum oben, Tag wechseln rechts
+         DATUMSLEISTE: Tag wechseln
          ====================================================== -->
     <section class="date-bar" id="dashboard">
-      <div class="hero-date">📅 {{ date_label }}</div>
-
       <div class="day-nav">
         <a class="icon-btn" href="?date={{ prev_date }}" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</a>
         <form method="GET" action="{{ url_for('index') }}" class="date-form" id="date-form">

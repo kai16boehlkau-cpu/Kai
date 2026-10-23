@@ -239,19 +239,6 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   font-size: 0.95rem;
 }
 
-.hero-date {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text);
-  background: rgba(0, 0, 0, 0.30);
-  border: 1px solid var(--border);
-  padding: 8px 14px;
-  border-radius: 999px;
-}
-
 .hero-side {
   display: flex;
   flex-direction: column;
