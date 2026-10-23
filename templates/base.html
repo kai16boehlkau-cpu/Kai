@@ -48,10 +48,6 @@
       <nav class="main-nav" aria-label="Hauptnavigation">
         <a href="{{ url_for('index') }}"
            class="{{ 'active' if active_page|default('dashboard') == 'dashboard' else '' }}">Dashboard</a>
-        <a href="{{ url_for('index') }}#hinzufuegen"
-           class="{{ 'active' if active_page == 'eintragen' else '' }}">Eintragen</a>
-        <a href="{{ url_for('index') }}#stagebuch"
-           class="{{ 'active' if active_page == 'tagebuch' else '' }}">Tagebuch</a>
         <a href="{{ url_for('kalender') }}"
            class="{{ 'active' if active_page == 'kalender' else '' }}">Kalender</a>
         <a href="{{ url_for('einstellungen') }}"
