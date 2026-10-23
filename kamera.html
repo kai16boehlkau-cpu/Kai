@@ -11,12 +11,16 @@
     // Weiterleitung unten verloren), dann: Ohne Tagesziel gibt es nur die Startseite.
     if (window.location.hash.indexOf("#kzt-key=") === 0) {
       var key = decodeURIComponent(window.location.hash.slice(9)).trim();
-      if (key.length >= 30) localStorage.setItem("kzt_gemini_key", key);
+      try {
+        if (key.length >= 30) localStorage.setItem("kzt_gemini_key", key);
+      } catch (error) { /* blockiert - kamera.js meldet es unten */ }
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
-    if (localStorage.getItem("kzt_goal_set") !== "true") {
-      window.location.replace("index.html");
-    }
+    try {
+      if (localStorage.getItem("kzt_goal_set") !== "true") {
+        window.location.replace("index.html");
+      }
+    } catch (error) { /* ohne Speicherzugriff: app.js uebernimmt die Sperre */ }
   </script>
 </head>
 <body>

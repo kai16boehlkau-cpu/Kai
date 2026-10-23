@@ -27,12 +27,46 @@ function loadData(key, fallback) {
 
 function saveData(key, value) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
-    return true;
+    var text = JSON.stringify(value);
+    localStorage.setItem(key, text);
+    // Kontrolle: manche Browser nehmen den Befehl an, verwerfen die
+    // Daten aber still (privater Modus, blockierte Cookies).
+    return localStorage.getItem(key) === text;
   } catch (error) {
-    return false; // z.B. wenn der Speicher voll ist
+    return false; // Speicher voll ODER blockiert
   }
 }
+
+// Test beim Seitenstart: Funktioniert der Speicher ueberhaupt?
+var storageOK = (function probeStorage() {
+  try {
+    localStorage.setItem("kzt_probe", "1");
+    var ok = localStorage.getItem("kzt_probe") === "1";
+    localStorage.removeItem("kzt_probe");
+    return ok;
+  } catch (error) {
+    return false;
+  }
+})();
+
+// Warhinweis, wenn nichts dauerhaft gespeichert werden kann -
+// sonst glaubt der Nutzer, es waere gespeichert, und es ist beim
+// Neuladen alles weg.
+function showStorageWarning() {
+  if (document.getElementById("storage-warning")) return;
+  var bar = document.createElement("div");
+  bar.className = "storage-warning";
+  bar.id = "storage-warning";
+  bar.innerHTML =
+    "<span>⚠️</span><span><strong>Dein Browser speichert keine Website-Daten -" +
+    " alles geht beim Neuladen verloren.</strong><br>" +
+    "Meist hilft: normaler Tab statt Privatmodus, und in den Browser-" +
+    "Einstellungen Website-Daten/Cookies erlauben. Danach neu laden.</span>";
+  var main = document.querySelector("main") || document.body;
+  main.insertBefore(bar, main.firstChild);
+}
+
+if (!storageOK) showStorageWarning();
 
 var entries = loadData(STORE_ENTRIES, []);
 var dailyGoal = loadData(STORE_GOAL, 2000);
@@ -49,7 +83,7 @@ if (!goalIsSet) {
   }
 }
 
-function persistEntries() { saveData(STORE_ENTRIES, entries); }
+function persistEntries() { return saveData(STORE_ENTRIES, entries); }
 
 /* ------------------------------------------------------------
    1) Hilfsfunktionen (Datum, Formatierung, Berechnung)
@@ -501,9 +535,13 @@ if (addForm) {
     data.id = Date.now();
     data.created_at = new Date().toTimeString().slice(0, 8);
     entries.push(data);
-    persistEntries();
+    var saved = persistEntries();
 
-    showToast(data.name + " wurde hinzugefuegt (" + data.calories + " kcal).", "success");
+    if (saved) {
+      showToast(data.name + " wurde hinzugefuegt (" + data.calories + " kcal).", "success");
+    } else {
+      showToast("Nur fuer diese Sitzung sichtbar: Dein Browser blockiert Website-Daten - nach dem Neuladen ist der Eintrag wieder weg (privater Modus?).", "error");
+    }
     selectedDate = data.date;
     renderDay();
     addForm.reset();
@@ -520,8 +558,11 @@ function deleteEntry(id) {
   var ok = window.confirm("Moechtest du diesen Eintrag wirklich loeschen?");
   if (!ok) return;
   entries = entries.filter(function (entry) { return entry.id !== id; });
-  persistEntries();
-  showToast("Eintrag wurde geloescht.", "success");
+  if (persistEntries()) {
+    showToast("Eintrag wurde geloescht.", "success");
+  } else {
+    showToast("Eintrag bis zum Neuladen entfernt - Dein Browser blockiert Website-Daten.", "error");
+  }
   renderDay();
 }
 
@@ -570,10 +611,14 @@ if (editForm) {
     entry.meal = data.meal;
     entry.date = data.date;
     entry.calories = calculateCalories(data.calories_per_100g, data.amount_grams);
-    persistEntries();
+    var saved = persistEntries();
 
     closeModal();
-    showToast("Eintrag wurde aktualisiert (" + entry.calories + " kcal).", "success");
+    if (saved) {
+      showToast("Eintrag wurde aktualisiert (" + entry.calories + " kcal).", "success");
+    } else {
+      showToast("Aenderung nur fuer diese Sitzung: Dein Browser blockiert Website-Daten.", "error");
+    }
     if (isValidDate(data.date)) selectedDate = data.date;
     renderDay();
   });
@@ -606,9 +651,13 @@ function saveGoal(value) {
 
   dailyGoal = goal;
   goalIsSet = true;
-  saveData(STORE_GOAL, dailyGoal);
-  saveData(STORE_GOALSET, true);
+  var savedGoal = saveData(STORE_GOAL, dailyGoal);
+  var savedFlag = saveData(STORE_GOALSET, true);
   document.documentElement.classList.remove("goal-locked");
+  if (!savedGoal || !savedFlag) {
+    // Nur in dieser Sitzung gueltig - ehrlich sagen, was passiert ist.
+    return "Tagesziel nur fuer diese Sitzung gespeichert: Dein Browser blockiert Website-Daten, nach dem Neuladen ist es wieder weg (privater Modus?).";
+  }
   return null;
 }
 
@@ -661,7 +710,7 @@ if (settingsKeyForm) {
   // Vorhandenen Key ins maskierte Eingabefeld uebernehmen.
   var savedKey = loadGeminiKey();
   if (keyInput) keyInput.value = savedKey;
-  if (keyBadge) keyBadge.textContent = savedKey ? "aktiv" : "kein Key";
+  if (keyBadge) keyBadge.textContent = savedKey ? "eigener Key" : "Standard-Key";
 
   settingsKeyForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -674,9 +723,16 @@ if (settingsKeyForm) {
       showToast("Der Key konnte nicht gespeichert werden.", "error");
       return;
     }
-    if (keyBadge) keyBadge.textContent = "aktiv";
+    if (keyBadge) keyBadge.textContent = "eigener Key";
     showToast("API-Key gespeichert.", "success");
   });
+}
+
+// Speicher-Test in den Einstellungen anzeigen (Badge neben "Tagesziel").
+var storageBadge = document.getElementById("storage-badge");
+if (storageBadge) {
+  storageBadge.textContent = storageOK ? "funktioniert" : "blockiert!";
+  storageBadge.classList.toggle("text-danger", !storageOK);
 }
 
 /* ------------------------------------------------------------

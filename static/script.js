@@ -459,7 +459,7 @@ if (settingsKeyForm) {
   // Vorhandenen Key ins maskierte Eingabefeld uebernehmen.
   var savedKey = loadGeminiKey();
   if (keyInput) keyInput.value = savedKey;
-  if (keyBadge) keyBadge.textContent = savedKey ? "aktiv" : "kein Key";
+  if (keyBadge) keyBadge.textContent = savedKey ? "eigener Key" : "Standard-Key";
 
   settingsKeyForm.addEventListener("submit", function (event) {
     event.preventDefault();
@@ -472,7 +472,7 @@ if (settingsKeyForm) {
       showToast("Der Key konnte nicht gespeichert werden.", "error");
       return;
     }
-    if (keyBadge) keyBadge.textContent = "aktiv";
+    if (keyBadge) keyBadge.textContent = "eigener Key";
     showToast("API-Key gespeichert.", "success");
   });
 }

@@ -12,7 +12,15 @@
 /* ------------------------------------------------------------
    0) Konstanten und Speicher
    ------------------------------------------------------------ */
-var STORE_KEY = "kzt_gemini_key"; // API-Key liegt ROH (nicht als JSON) im Browser
+var STORE_KEY = "kzt_gemini_key"; // Eigener API-Key liegt ROH im Browser
+
+// Standard-Key der Seite: ALLE koennen die Kamera sofort nutzen,
+// ohne selbst einen Key einzutragen. Ein eigener Key (Einstellungen
+// oder Einrichtungs-Link) hat immer Vorrang.
+// ACHTUNG: Der Key ist im Quelltext der Seite sichtbar - auf
+// aistudio.google.com sollte er auf "HTTP-Referrer" eingeschraenkt
+// und mit einem Tageslimit versehen werden. sonst kann ihn jeder mitlesen.
+var DEFAULT_KEY = "AQ.Ab8RN6L8sZUfWeel1bjrINcShl7lcDVTQ7zewlHlYNrl-na3zw";
 
 // Modelle der Reihe nach versuchen: der erste freie Gewinner gewinnt.
 // (Beliebte Modelle melden zeitweise "503 - hohe Nachfrage".)
@@ -72,10 +80,11 @@ function camDefaultMeal() {
    ------------------------------------------------------------ */
 function camGetKey() {
   try {
-    return (localStorage.getItem(STORE_KEY) || "").trim();
-  } catch (error) {
-    return "";
-  }
+    var own = (localStorage.getItem(STORE_KEY) || "").trim();
+    if (own) return own;
+  } catch (error) { /* Speicher blockiert - Standard-Key weiterverwenden */ }
+  // Ohne eigenen Key den Standard-Key der Seite verwenden.
+  return DEFAULT_KEY.length >= 30 ? DEFAULT_KEY : "";
 }
 
 function camSetKey(value) {
@@ -93,10 +102,14 @@ function camSetKey(value) {
 (function readKeyFromHash() {
   if (window.location.hash.indexOf("#kzt-key=") !== 0) return;
   var key = decodeURIComponent(window.location.hash.slice(9)).trim();
-  if (key.length >= 30) camSetKey(key);
+  var saved = false;
+  if (key.length >= 30) saved = camSetKey(key);
   try {
     window.history.replaceState(null, "", window.location.pathname + window.location.search);
   } catch (error) { /* egal */ }
+  if (key.length >= 30 && !saved) {
+    camToast("Der API-Key konnte NICHT gespeichert werden - Dein Browser blockiert Website-Daten (privater Modus?).", "error");
+  }
 })();
 
 var keyForm = document.getElementById("key-form");
@@ -580,7 +593,11 @@ if (btnSave) {
           created_at: new Date().toTimeString().slice(0, 8)
         });
       });
-      persistEntries();
+      if (!persistEntries()) {
+        btnSave.disabled = false;
+        camToast("Eintraege nur fuer diese Sitzung sichtbar: Dein Browser blockiert Website-Daten - nach dem Neuladen sind sie weg.", "error");
+        return;
+      }
       finishSave(camResult.items.length, date);
     }
   });
