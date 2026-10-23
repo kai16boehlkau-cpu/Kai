@@ -322,17 +322,6 @@ function renderDay() {
     });
   }
 
-  // Ziel-Karte rechts
-  var goalCurrent = document.getElementById("goal-current");
-  if (goalCurrent) goalCurrent.textContent = String(dailyGoal);
-  var goalHint = document.getElementById("goal-hint");
-  if (goalHint) goalHint.innerHTML = "Aktuell <strong>" + dailyGoal + " kcal</strong> pro Tag.";
-  var goalEdit = document.getElementById("goal-edit-link");
-  if (goalEdit) {
-    goalEdit.textContent = goalIsSet ? "Ändern auf der Seite Einstellungen" : "Tagesziel jetzt festlegen";
-    goalEdit.setAttribute("href", goalIsSet ? "einstellungen.html" : "#ziel-start");
-  }
-
   // Mahlzeit-Chips
   var chipsBox = document.getElementById("meal-chips");
   if (chipsBox) {

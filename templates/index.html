@@ -198,34 +198,8 @@
         </form>
       </section>
 
-      <!-- Persönliches Tagesziel: ab jetzt nur noch Anzeige -->
+      <!-- Kleine Bilanz der vier Mahlzeiten als Chips -->
       <div class="split-side">
-        <section class="card fade-in" id="ziel">
-          <div class="card-head">
-            <div>
-              <h2>Persönliches Tagesziel</h2>
-              <p class="section-hint">Aktuell <strong>{{ daily_goal }} kcal</strong> pro Tag.</p>
-            </div>
-            <span class="head-badge">🎯</span>
-          </div>
-
-          <p class="goal-readonly">
-            <strong>{{ daily_goal }}</strong> <span>kcal pro Tag</span>
-          </p>
-
-          <a class="btn btn-soft btn-wide" href="{{ '#ziel-start' if not goal_set else url_for('einstellungen') }}">
-            {{ 'Tagesziel jetzt festlegen' if not goal_set else 'Ändern auf der Seite Einstellungen' }}
-          </a>
-
-          <p class="fineprint">
-            Das Ziel lässt sich nach der Einrichtung nur noch auf der separaten
-            Seite <strong>Einstellungen</strong> verändern - so verhinderst du,
-            dass du es beim Tracken aus Versehen änderst.
-            2000 kcal sind ein technischer Standardwert und keine Ernährungsempfehlung.
-          </p>
-        </section>
-
-        <!-- Kleine Bilanz der vier Mahlzeiten als Chips -->
         <section class="card fade-in">
           <div class="card-head">
             <div>
