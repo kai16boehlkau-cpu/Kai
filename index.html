@@ -53,27 +53,17 @@
 
   <main class="container">
 
-    <!-- HERO: Begrüßung, Datum und Tageswechsel -->
-    <section class="hero" id="dashboard">
-      <div class="hero-text">
-        <span class="kicker">Übersicht</span>
-        <h2>Willkommen zurück! 👋</h2>
-        <p class="hero-sub">Behalte den Überblick über deine Mahlzeiten – alles bleibt lokal auf deinem Computer.</p>
-        <div class="hero-date" id="date-label">📅</div>
-      </div>
+    <!-- DATUMSLEISTE: Datum oben, Tag wechseln rechts -->
+    <section class="date-bar" id="dashboard">
+      <div class="hero-date" id="date-label">📅</div>
 
-      <div class="hero-side">
-        <span class="status-chip" id="goal-chip">⚡</span>
-
-        <div class="day-nav">
-          <button type="button" class="icon-btn" id="day-prev" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</button>
-          <div class="date-form">
-            <input type="date" id="date-picker" aria-label="Datum wählen">
-          </div>
-          <button type="button" class="icon-btn" id="day-next" title="Nächster Tag" aria-label="Nächster Tag">›</button>
-          <button type="button" class="btn btn-sm btn-soft" id="today-btn" hidden>Zu heute</button>
-          <a class="btn btn-sm btn-soft" href="kalender.html" title="Kalender mit Kalorien pro Tag">📅 Kalender</a>
+      <div class="day-nav">
+        <button type="button" class="icon-btn" id="day-prev" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</button>
+        <div class="date-form">
+          <input type="date" id="date-picker" aria-label="Datum wählen">
         </div>
+        <button type="button" class="icon-btn" id="day-next" title="Nächster Tag" aria-label="Nächster Tag">›</button>
+        <button type="button" class="btn btn-sm btn-soft" id="today-btn" hidden>Zu heute</button>
       </div>
     </section>
 

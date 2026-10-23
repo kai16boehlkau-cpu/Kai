@@ -257,12 +257,6 @@ function renderDay() {
   var dateLabel = document.getElementById("date-label");
   if (dateLabel) dateLabel.textContent = "📅 " + formatDateDE(selectedDate);
 
-  var chip = document.getElementById("goal-chip");
-  if (chip) {
-    chip.textContent = (stats.total >= dailyGoal ? "🎯 " : "⚡ ") + message;
-    chip.classList.toggle("status-ok", stats.total >= dailyGoal);
-  }
-
   var picker = document.getElementById("date-picker");
   if (picker && picker.value !== selectedDate) picker.value = selectedDate;
 

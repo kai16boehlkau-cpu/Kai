@@ -212,7 +212,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   border-color: var(--violet);
 }
 
-/* ---------- 4) Hero / Begrüßung ---------- */
+/* ---------- 4) Hero / Datumsleiste ---------- */
 .hero {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -285,6 +285,16 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+}
+
+/* Schmale Leiste auf dem Dashboard: Datum + Tag wechseln */
+.date-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 22px;
 }
 
 /* ---------- 5) Karten, KPI-Zahlen, Ring ---------- */
@@ -1780,4 +1790,6 @@ code {
   }
 
   .start-form .btn { width: 100%; }
+
+  .date-bar { justify-content: center; }
 }

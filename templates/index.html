@@ -3,32 +3,20 @@
 {% block content %}
 
     <!-- ======================================================
-         HERO: Begrüßung, Datum und Tageswechsel
+         DATUMSLEISTE: Datum oben, Tag wechseln rechts
          ====================================================== -->
-    <section class="hero" id="dashboard">
-      <div class="hero-text">
-        <span class="kicker">Übersicht</span>
-        <h2>Willkommen zurück! 👋</h2>
-        <p class="hero-sub">Behalte den Überblick über deine Mahlzeiten – alles bleibt lokal auf deinem Computer.</p>
-        <div class="hero-date">📅 {{ date_label }}</div>
-      </div>
+    <section class="date-bar" id="dashboard">
+      <div class="hero-date">📅 {{ date_label }}</div>
 
-      <div class="hero-side">
-        <span class="status-chip {% if goal_reached %}status-ok{% endif %}">
-          {% if goal_reached %}🎯{% else %}⚡{% endif %} {{ goal_message }}
-        </span>
-
-        <div class="day-nav">
-          <a class="icon-btn" href="?date={{ prev_date }}" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</a>
-          <form method="GET" action="{{ url_for('index') }}" class="date-form" id="date-form">
-            <input type="date" id="date-picker" name="date" value="{{ selected_date }}" aria-label="Datum wählen">
-          </form>
-          <a class="icon-btn" href="?date={{ next_date }}" title="Nächster Tag" aria-label="Nächster Tag">›</a>
-          {% if not is_today %}
-            <a class="btn btn-sm btn-soft" href="{{ url_for('index') }}">Zu heute</a>
-          {% endif %}
-          <a class="btn btn-sm btn-soft" href="{{ url_for('kalender') }}" title="Kalender mit Kalorien pro Tag">📅 Kalender</a>
-        </div>
+      <div class="day-nav">
+        <a class="icon-btn" href="?date={{ prev_date }}" title="Vorheriger Tag" aria-label="Vorheriger Tag">‹</a>
+        <form method="GET" action="{{ url_for('index') }}" class="date-form" id="date-form">
+          <input type="date" id="date-picker" name="date" value="{{ selected_date }}" aria-label="Datum wählen">
+        </form>
+        <a class="icon-btn" href="?date={{ next_date }}" title="Nächster Tag" aria-label="Nächster Tag">›</a>
+        {% if not is_today %}
+          <a class="btn btn-sm btn-soft" href="{{ url_for('index') }}">Zu heute</a>
+        {% endif %}
       </div>
     </section>
 
