@@ -310,23 +310,6 @@ function renderDay() {
     });
   }
 
-  // Mahlzeit-Chips
-  var chipsBox = document.getElementById("meal-chips");
-  if (chipsBox) {
-    chipsBox.innerHTML = "";
-    MEALS.forEach(function (meal) {
-      var chipEl = document.createElement("div");
-      chipEl.className = "meal-chip chip-" + MEAL_STYLE[meal];
-      chipEl.innerHTML =
-        '<span class="chip-icon">' + MEAL_ICON[meal] + "</span>" +
-        '<span class="chip-name">' + meal + "</span>" +
-        "<strong>" + stats.perMeal[meal] + "</strong><small>kcal</small>";
-      chipsBox.appendChild(chipEl);
-    });
-  }
-  var chipsHint = document.getElementById("chips-hint");
-  if (chipsHint) chipsHint.textContent = "Kalorien je Mahlzeit am " + selectedDate + ".";
-
   renderDiary(stats);
 }
 

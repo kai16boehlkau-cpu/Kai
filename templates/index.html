@@ -123,13 +123,8 @@
       </div>
     </section>
 
-    <!-- ======================================================
-         ZWEI SPALTEN: Eintragen + Tagesziel (nur Anzeige)
-         ====================================================== -->
-    <div class="split">
-
-      <!-- Lebensmittel hinzufügen -->
-      <section class="card fade-in" id="hinzufuegen">
+    <!-- EINTRAGEN -->
+    <section class="card fade-in" id="hinzufuegen">
         <div class="card-head">
           <h2>Lebensmittel hinzufügen</h2>
         </div>
@@ -177,40 +172,14 @@
               <label for="entry-date">Datum</label>
               <input type="date" id="entry-date" name="date" value="{{ selected_date }}" required>
             </div>
-
-            <div class="form-field span-2">
-              <label>Berechnete Kalorien der Portion</label>
-              <div class="calorie-preview" id="calorie-preview">– kcal</div>
-            </div>
           </div>
 
-          <button type="submit" class="btn btn-wide">Eintrag speichern</button>
+          <div class="form-footer">
+            <div class="calorie-preview" id="calorie-preview">– kcal</div>
+            <button type="submit" class="btn">Eintrag speichern</button>
+          </div>
         </form>
       </section>
-
-      <!-- Kleine Bilanz der vier Mahlzeiten als Chips -->
-      <div class="split-side">
-        <section class="card fade-in">
-          <div class="card-head">
-            <div>
-              <h2>Bilanz nach Mahlzeit</h2>
-              <p class="section-hint">Kalorien je Mahlzeit am {{ selected_date }}.</p>
-            </div>
-          </div>
-
-          <div class="meal-chips">
-            {% for meal in meals %}
-            <div class="meal-chip chip-{{ 'breakfast' if meal == 'Frühstück' else 'lunch' if meal == 'Mittagessen' else 'dinner' if meal == 'Abendessen' else 'snack' }}">
-              <span class="chip-icon">{% if meal == 'Frühstück' %}🍳{% elif meal == 'Mittagessen' %}🍛{% elif meal == 'Abendessen' %}🍽️{% else %}🍎{% endif %}</span>
-              <span class="chip-name">{{ meal }}</span>
-              <strong>{{ calories_per_meal[meal] }}</strong>
-              <small>kcal</small>
-            </div>
-            {% endfor %}
-          </div>
-        </section>
-      </div>
-    </div>
 
     <!-- ======================================================
          ERNÄHRUNGSTAGEBUCH

@@ -498,25 +498,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   color: var(--muted-2);
 }
 
-/* ---------- 6) Zwei Spalten-Layout ---------- */
-.split {
-  display: grid;
-  grid-template-columns: 1.55fr 1fr;
-  gap: 22px;
-  align-items: start;
-  margin-bottom: 22px;
-}
-
-.split > .card,
-.split-side > .card { margin-bottom: 0; }
-
-.split-side {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-/* ---------- 7) Buttons ---------- */
+/* ---------- 6) Buttons ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -591,11 +573,23 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
   outline-offset: 2px;
 }
 
-/* ---------- 8) Formulare ---------- */
+/* ---------- 7) Formulare ---------- */
 .stack-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+/* Kalorien-Vorschau und Speichern-Button in einer Reihe */
+.form-footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.form-footer .calorie-preview {
+  flex: 1;
+  margin: 0;
 }
 
 .form-grid {
@@ -615,7 +609,7 @@ section[id], div[id] { scroll-margin-top: calc(var(--header-h) + 18px); }
 .form-field label {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #c9c2e6;
+  color: var(--muted);
 }
 
 input, select {
@@ -706,56 +700,7 @@ input[type="date"] { max-width: 100%; }
 
 .preset:active { transform: translateY(0); }
 
-/* Bilanz-Chips pro Mahlzeit */
-.meal-chips {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.meal-chip {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas: "icon name name" "icon value unit";
-  align-items: center;
-  column-gap: 10px;
-  row-gap: 0;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  transition: transform 0.18s ease, border-color 0.18s ease;
-}
-
-.meal-chip:hover { transform: translateY(-2px); }
-
-.chip-icon { grid-area: icon; font-size: 20px; }
-.chip-name {
-  grid-area: name;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--muted);
-}
-.meal-chip strong {
-  grid-area: value;
-  font-size: 1.15rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-}
-.meal-chip small {
-  grid-area: unit;
-  font-size: 0.7rem;
-  color: var(--muted-2);
-  justify-self: start;
-  margin-left: 4px;
-}
-
-.chip-breakfast { border-color: rgba(251, 191, 36, 0.35); }
-.chip-lunch     { border-color: rgba(34, 197, 94, 0.40); }
-.chip-dinner    { border-color: rgba(96, 165, 250, 0.35); }
-.chip-snack     { border-color: rgba(244, 114, 182, 0.35); }
-
-/* ---------- 9) Tagebuch: Werkzeuge, Einträge ---------- */
+/* ---------- 8) Tagebuch: Werkzeuge, Einträge ---------- */
 .diary-tools {
   display: flex;
   flex-wrap: wrap;
@@ -948,7 +893,7 @@ input[type="date"] { max-width: 100%; }
   font-size: 0.9rem;
 }
 
-/* ---------- 10) Icon-Buttons und Datumsfeld ---------- */
+/* ---------- 9) Icon-Buttons und Datumsfeld ---------- */
 .icon-btn {
   display: grid;
   place-items: center;
@@ -980,7 +925,7 @@ input[type="date"] { max-width: 100%; }
   padding: 0 12px;
 }
 
-/* ---------- 11) Dialog (Modal) ---------- */
+/* ---------- 10) Dialog (Modal) ---------- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -1025,7 +970,7 @@ input[type="date"] { max-width: 100%; }
   margin-top: 6px;
 }
 
-/* ---------- 12) Benachrichtigungen (Toasts) ---------- */
+/* ---------- 11) Benachrichtigungen (Toasts) ---------- */
 #toast-area {
   position: fixed;
   top: calc(var(--header-h) + 14px);
@@ -1079,7 +1024,7 @@ input[type="date"] { max-width: 100%; }
 
 .toast.hide { animation: toastOut 0.4s ease both; }
 
-/* ---------- 13) Animationen ---------- */
+/* ---------- 12) Animationen ---------- */
 .fade-in {
   opacity: 0;
   transform: translateY(18px);
@@ -1131,7 +1076,7 @@ input[type="date"] { max-width: 100%; }
   animation: numberPop 0.5s ease;
 }
 
-/* ---------- 14) Barrierefreiheit: weniger Bewegung ---------- */
+/* ---------- 13) Barrierefreiheit: weniger Bewegung ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
@@ -1144,10 +1089,9 @@ input[type="date"] { max-width: 100%; }
   .fade-in { opacity: 1; transform: none; }
 }
 
-/* ---------- 15) Responsive (Handy & Tablet) ---------- */
+/* ---------- 14) Responsive (Handy & Tablet) ---------- */
 @media (max-width: 1020px) {
   .kpi-grid { grid-template-columns: 1fr 1fr; }
-  .split { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -1193,7 +1137,7 @@ input[type="date"] { max-width: 100%; }
   .kpi-grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .form-grid .span-2 { grid-column: span 1; }
-  .meal-chips { grid-template-columns: 1fr; }
+  .form-footer { flex-direction: column; align-items: stretch; }
   .container { padding: 20px 14px 44px; }
   .card { padding: 18px; }
 
@@ -1209,7 +1153,7 @@ input[type="date"] { max-width: 100%; }
   .start-form .btn { width: 100%; }
 }
 
-/* ---------- 16) Ladebildschirm mit Logo-Animation ----------
+/* ---------- 15) Ladebildschirm mit Logo-Animation ----------
    Das Logo erscheint beim Öffnen groß mittig und fliegt
    danach animiert an seinen Platz neben den Schriftzug.
    Die Bewegung selbst wird von JavaScript gesteuert (FLIP):
@@ -1285,7 +1229,7 @@ input[type="date"] { max-width: 100%; }
   transform: translateY(-10px);
 }
 
-/* ---------- 17) Start-Karte: Tagesziel nur beim ersten Mal ---------- */
+/* ---------- 16) Start-Karte: Tagesziel nur beim ersten Mal ---------- */
 .start-card {
   border: 1px solid rgba(34, 197, 94, 0.55);
   background:
@@ -1334,7 +1278,7 @@ input[type="date"] { max-width: 100%; }
 
 .start-form .btn { flex: 0 0 auto; }
 
-/* ---------- 18) Kleinige Zusätze ---------- */
+/* ---------- 17) Kleinige Zusätze ---------- */
 code {
   font-family: "Cascadia Mono", "Consolas", "Courier New", monospace;
   font-size: 0.92em;
@@ -1342,10 +1286,10 @@ code {
   border: 1px solid rgba(34, 197, 94, 0.30);
   border-radius: 6px;
   padding: 1px 6px;
-  color: #d8d2f5;
+  color: #d1fae5;
 }
 
-/* ---------- 19) Datenbank-Diagramm ---------- */
+/* ---------- 18) Datenbank-Diagramm ---------- */
 .db-card {
   border: 2px solid rgba(52, 211, 153, 0.45);
   background:
@@ -1528,7 +1472,7 @@ code {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-/* ---------- 20) Responsive für die neuen Bereiche ---------- */
+/* ---------- 19) Responsive für die neuen Bereiche ---------- */
 @media (max-width: 1020px) {
   .db-explain { grid-template-columns: 1fr 1fr; }
   .db-diagram { grid-template-columns: 1fr; }
@@ -1554,15 +1498,15 @@ code {
 
 
 
-/* ---------- 21) Gesperrt, solange kein Tagesziel festgelegt ist ---------- */
+/* ---------- 20) Gesperrt, solange kein Tagesziel festgelegt ist ---------- */
 .goal-locked .main-nav a:not(.active) { display: none; }
 .goal-locked .hero,
 .goal-locked .kpi-grid,
 .goal-locked #vergleich,
-.goal-locked .split,
+.goal-locked #hinzufuegen,
 .goal-locked #stagebuch { display: none !important; }
 
-/* ---------- 22) Kalender ---------- */
+/* ---------- 21) Kalender ---------- */
 .cal-toolbar {
   display: flex;
   align-items: center;
@@ -1695,7 +1639,7 @@ code {
   .cal-kcal { display: none; }
 }
 
-/* ---------- 23) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
+/* ---------- 22) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
 @media (max-width: 540px) {
   .start-form {
     flex-direction: column;

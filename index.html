@@ -134,10 +134,8 @@
       <div class="meal-bars" id="meal-bars"></div>
     </section>
 
-    <!-- ZWEI SPALTEN: Eintragen + Bilanz -->
-    <div class="split">
-
-      <section class="card fade-in" id="hinzufuegen">
+    <!-- EINTRAGEN -->
+    <section class="card fade-in" id="hinzufuegen">
         <div class="card-head">
           <h2>Lebensmittel hinzufügen</h2>
         </div>
@@ -183,30 +181,14 @@
               <label for="entry-date">Datum</label>
               <input type="date" id="entry-date" name="date" required>
             </div>
-
-            <div class="form-field span-2">
-              <label>Berechnete Kalorien der Portion</label>
-              <div class="calorie-preview" id="calorie-preview">– kcal</div>
-            </div>
           </div>
 
-          <button type="submit" class="btn btn-wide">Eintrag speichern</button>
+          <div class="form-footer">
+            <div class="calorie-preview" id="calorie-preview">– kcal</div>
+            <button type="submit" class="btn">Eintrag speichern</button>
+          </div>
         </form>
       </section>
-
-      <div class="split-side">
-        <section class="card fade-in">
-          <div class="card-head">
-            <div>
-              <h2>Bilanz nach Mahlzeit</h2>
-              <p class="section-hint" id="chips-hint">Kalorien je Mahlzeit.</p>
-            </div>
-          </div>
-
-          <div class="meal-chips" id="meal-chips"></div>
-        </section>
-      </div>
-    </div>
 
     <!-- ERNÄHRUNGSTAGEBUCH -->
     <section class="card fade-in" id="stagebuch">
