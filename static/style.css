@@ -1095,18 +1095,7 @@ input[type="date"] { max-width: 100%; }
 
 .toast.hide { animation: toastOut 0.4s ease both; }
 
-/* ---------- 13) Fußzeile ---------- */
-.site-footer {
-  border-top: 1px solid var(--border);
-  text-align: center;
-  padding: 26px 16px 44px;
-  color: var(--muted-2);
-  font-size: 0.82rem;
-}
-
-.site-footer strong { color: var(--muted); letter-spacing: 0.08em; }
-
-/* ---------- 14) Animationen ---------- */
+/* ---------- 13) Animationen ---------- */
 .fade-in {
   opacity: 0;
   transform: translateY(18px);
@@ -1158,7 +1147,7 @@ input[type="date"] { max-width: 100%; }
   animation: numberPop 0.5s ease;
 }
 
-/* ---------- 15) Barrierefreiheit: weniger Bewegung ---------- */
+/* ---------- 14) Barrierefreiheit: weniger Bewegung ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 
@@ -1171,7 +1160,7 @@ input[type="date"] { max-width: 100%; }
   .fade-in { opacity: 1; transform: none; }
 }
 
-/* ---------- 16) Responsive (Handy & Tablet) ---------- */
+/* ---------- 15) Responsive (Handy & Tablet) ---------- */
 @media (max-width: 1020px) {
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .kpi-ring { grid-column: span 2; }
@@ -1238,7 +1227,7 @@ input[type="date"] { max-width: 100%; }
   .start-form .btn { width: 100%; }
 }
 
-/* ---------- 17) Ladebildschirm mit Logo-Animation ----------
+/* ---------- 16) Ladebildschirm mit Logo-Animation ----------
    Das Logo erscheint beim Öffnen groß mittig und fliegt
    danach animiert an seinen Platz neben den Schriftzug.
    Die Bewegung selbst wird von JavaScript gesteuert (FLIP):
@@ -1314,7 +1303,7 @@ input[type="date"] { max-width: 100%; }
   transform: translateY(-10px);
 }
 
-/* ---------- 18) Start-Karte: Tagesziel nur beim ersten Mal ---------- */
+/* ---------- 17) Start-Karte: Tagesziel nur beim ersten Mal ---------- */
 .start-card {
   border: 1px solid rgba(139, 92, 246, 0.55);
   background:
@@ -1363,7 +1352,7 @@ input[type="date"] { max-width: 100%; }
 
 .start-form .btn { flex: 0 0 auto; }
 
-/* ---------- 19) Kleinige Zusätze ---------- */
+/* ---------- 18) Kleinige Zusätze ---------- */
 .kpi-link {
   margin-top: 6px;
   font-size: 0.78rem;
@@ -1395,7 +1384,7 @@ input[type="date"] { max-width: 100%; }
 
 .goal-readonly span { color: var(--muted); font-size: 0.88rem; }
 
-/* ---------- 20) Einstellungen ---------- */
+/* ---------- 19) Einstellungen ---------- */
 .settings-grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -1427,7 +1416,7 @@ code {
   color: #d8d2f5;
 }
 
-/* ---------- 21) Datenbank-Diagramm ---------- */
+/* ---------- 20) Datenbank-Diagramm ---------- */
 .db-card {
   border: 2px solid rgba(52, 211, 153, 0.45);
   background:
@@ -1610,7 +1599,7 @@ code {
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-/* ---------- 22) Responsive für die neuen Bereiche ---------- */
+/* ---------- 21) Responsive für die neuen Bereiche ---------- */
 @media (max-width: 1020px) {
   .db-explain { grid-template-columns: 1fr 1fr; }
   .db-diagram { grid-template-columns: 1fr; }
@@ -1636,7 +1625,7 @@ code {
 
 
 
-/* ---------- 23) Gesperrt, solange kein Tagesziel festgelegt ist ---------- */
+/* ---------- 22) Gesperrt, solange kein Tagesziel festgelegt ist ---------- */
 .goal-locked .main-nav a:not(.active) { display: none; }
 .goal-locked .hero,
 .goal-locked .kpi-grid,
@@ -1644,7 +1633,7 @@ code {
 .goal-locked .split,
 .goal-locked #stagebuch { display: none !important; }
 
-/* ---------- 24) Kalender ---------- */
+/* ---------- 23) Kalender ---------- */
 .cal-toolbar {
   display: flex;
   align-items: center;
@@ -1777,7 +1766,7 @@ code {
   .cal-kcal { display: none; }
 }
 
-/* ---------- 25) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
+/* ---------- 24) Responsive-Korrekturen (stehen zuletzt und gewinnen) ---------- */
 @media (max-width: 540px) {
   .start-form {
     flex-direction: column;
