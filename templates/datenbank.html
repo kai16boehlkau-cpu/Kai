@@ -14,9 +14,11 @@
         <p class="hero-sub">
           Wenn du ein Lebensmittel speicherst, verschwindet es nicht „irgendwo im
           Programm“, sondern in einer Datei namens <code>database.db</code> –
-          eine SQLite-Datenbank direkt neben <code>app.py</code>. Auf dieser Seite
-          steht, was darin gespeichert ist, wie der Python-Code damit arbeitet
-          und warum manche Diele so gebaut sind, wie sie gebaut sind.
+          eine
+          <button type="button" class="db-term" data-tip="Dateibasierte Datenbank, die zu Python dazugehört. Kein eigener Server nötig – die ganze Datenbank ist einfach eine Datei.">SQLite</button>-
+          Datenbank direkt neben <code>app.py</code>. Auf dieser Seite steht, was
+          darin gespeichert ist, wie der Python-Code damit arbeitet und warum
+          manche Spalten so gebaut sind, wie sie gebaut sind.
         </p>
       </div>
       <div class="hero-side">
@@ -24,12 +26,23 @@
       </div>
     </section>
 
+    <!-- Inhaltsleiste: springt zu den Kapiteln und markiert das sichtbare -->
+    <nav class="db-toc" aria-label="Inhaltsverzeichnis der Datenbankseite">
+      <a class="db-toc-link" href="#kap-1">01 · Grundlagen</a>
+      <a class="db-toc-link" href="#kap-2">02 · Die zwei Tabellen</a>
+      <a class="db-toc-link" href="#kap-3">03 · Speichern</a>
+      <a class="db-toc-link" href="#kap-4">04 · SQL-Befehle</a>
+      <a class="db-toc-link" href="#kap-5">05 · Warum so?</a>
+      <a class="db-toc-link" href="#kap-6">06 · Fragen</a>
+    </nav>
+
     <!-- ======================================================
          01) Was ist eine Datenbank überhaupt?
          ====================================================== -->
-    <section class="card db-card fade-in">
+    <section class="card db-card fade-in" id="kap-1">
       <div class="card-head">
         <div>
+          <span class="card-index">KAPITEL 01</span>
           <h2>Was ist eine Datenbank überhaupt?</h2>
           <p class="section-hint">Die Grundidee in zwei Minuten erklärt.</p>
         </div>
@@ -42,7 +55,9 @@
           ungefähr arbeitet eine Datenbank. Die Daten liegen in <strong>Tabellen</strong>
           aus <strong>Zeilen</strong> (ein Eintrag pro Zeile) und <strong>Spalten</strong>
           (ein Merkmal pro Spalte, z.&nbsp;B. „Name“ oder „Kalorien“). Jede Spalte
-          hat einen festen Datentyp – SQLite weist eine Zeile ab, in der in der
+          hat einen festen
+          <button type="button" class="db-term" data-tip="Fester Wert-Typ einer Spalte: TEXT, INTEGER oder REAL. SQLite weist Zeilen ab, deren Wert nicht in den Typ passen würde.">Datentyp</button>
+          – SQLite weist eine Zeile ab, in der in der
           Kalorienspalte plötzlich Text steht. Genau diese Festigkeit ist der
           Vorteil gegenüber einer einfachen Textdatei.
         </p>
@@ -83,13 +98,15 @@
     <!-- ======================================================
          02) Die zwei Tabellen
          ====================================================== -->
-    <section class="card db-card fade-in">
+    <section class="card db-card fade-in" id="kap-2">
       <div class="card-head">
         <div>
+          <span class="card-index">KAPITEL 02</span>
           <h2>Die zwei Tabellen im Detail</h2>
           <p class="section-hint">
             Die Datenbank hat genau zwei Tabellen: <code>entries</code> für
             Mahlzeiten und <code>settings</code> für das Tagesziel.
+            Klicke eine Spalte an, um Beispielwert und Hintergrund zu sehen.
           </p>
         </div>
         <span class="head-badge">Aufbau von database.db</span>
@@ -122,7 +139,7 @@
         </div>
       </div>
 
-      <!-- Diagramm der beiden Tabellen -->
+      <!-- Diagramm der beiden Tabellen; Zeilen sind anklickbar -->
       <div class="db-diagram">
 
         <div class="db-table db-entries">
@@ -131,79 +148,160 @@
             <small>– jede Mahlzeit ist eine Zeile</small>
           </div>
           <ul class="db-cols">
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">id</span>
                 <span class="db-type">INTEGER</span>
                 <i class="pk-pill">PK</i>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Eindeutige Nummer der Zeile. Über sie wird
               ein Eintrag später geändert oder gelöscht.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>4</code>
+                <p>
+                  Die Nummern vergibt SQLite selbst
+                  (<code>AUTOINCREMENT</code>): jede neue Zeile bekommt die
+                  nächste freie Nummer, doppelte IDs sind unmöglich.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">name</span>
                 <span class="db-type">TEXT</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Was gegessen wurde, z.&nbsp;B. „Haferflocken
               mit Milch“ (höchstens 80 Zeichen).</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>Haferflocken mit Milch</code>
+                <p>
+                  Der Name wird frei getippt. <code>NOT NULL</code> sorgt
+                  dafür, dass keine leere Zeile gespeichert werden kann – die
+                  Prüfung passiert vorher in Python.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">calories_per_100g</span>
                 <span class="db-type">REAL</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Der Kalorienwert pro 100&nbsp;g, den du
               eingetragen hast – z.&nbsp;B. <code>379.5</code>.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>379.5</code>
+                <p>
+                  <code>REAL</code> statt <code>INTEGER</code>, weil
+                  Nährwertangaben oft Nachkommastellen haben. Erlaubt sind
+                  Werte von 1 bis 900 – mehr hat kaum ein Lebensmittel.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">amount_grams</span>
                 <span class="db-type">REAL</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Wie viel gegessen wurde, z.&nbsp;B.
               <code>60</code> Gramm.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>60</code>
+                <p>
+                  Auch <code>2.5</code> Gramm für Gewürze ist möglich, deshalb
+                  <code>REAL</code>. Python akzeptiert übrigens auch
+                  <code>2,5</code> mit Komma und wandelt es um.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">calories</span>
                 <span class="db-type">INTEGER</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Kalorien der Portion, in Python berechnet:
               <code>379.5 × 60 / 100 = 228</code>. Wird mitgespeichert, damit
               die Tagesumschau schnell addieren kann.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>228</code>
+                <p>
+                  <code>INTEGER</code>, weil für die Anzeige ganze Kalorien
+                  reichen – <code>round()</code> rundet. Der Wert wird beim
+                  Speichern berechnet und dann nie mehr geändert.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">meal</span>
                 <span class="db-type">TEXT</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Eine von vier Mahlzeiten:
               Frühstück, Mittagessen, Abendessen oder Snack.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>Frühstück</code>
+                <p>
+                  Erlaubt sind nur die vier Werte aus der Liste
+                  <code>MEALS</code> in <code>app.py</code>.
+                  <code>validate_entry_form()</code> prüft das vor dem
+                  Speichern.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">date</span>
                 <span class="db-type">TEXT</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Der Tag der Mahlzeit im Format
               <code>JJJJ-MM-TT</code>, z.&nbsp;B. <code>2026-10-22</code>.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>2026-10-22</code>
+                <p>
+                  Dieses Datum steht auch in der Adresszeile
+                  (<code>/?date=2026-10-22</code>). Dashboard und Kalender
+                  filtern genau mit dieser Spalte.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">created_at</span>
                 <span class="db-type">TEXT</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Uhrzeit des Speicherns, z.&nbsp;B.
               <code>16:41:07</code>. Damit bleibt die Reihenfolge der Einträge
               eines Tages erhalten.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>07:12:44</code>
+                <p>
+                  <code>datetime.now()</code> schreibt die Uhrzeit beim
+                  Speichern. <code>ORDER BY created_at</code> zeigt morgens
+                  zuerst das Frühstück – auch ohne die Mahlzeit-Spalte.
+                </p>
+              </div>
             </li>
           </ul>
         </div>
@@ -224,33 +322,64 @@
             <small>– immer genau eine Zeile</small>
           </div>
           <ul class="db-cols">
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">id</span>
                 <span class="db-type">INTEGER</span>
                 <i class="pk-pill">PK</i>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Immer <code>1</code> – es gibt nur diese
               eine Zeile in der ganzen Tabelle.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>1</code>
+                <p>
+                  Der Wert ist fest verdrahtet: alle Abfragen und Updates
+                  nutzen <code>WHERE id = 1</code>. Eine zweite Zeile gibt es
+                  konstruktiv nicht.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">daily_goal</span>
                 <span class="db-type">INTEGER</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc">Das Tagesziel in kcal, z.&nbsp;B.
               <code>2200</code>.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>2200</code>
+                <p>
+                  Änderbar ist das Ziel nur über die Einstellungsseite.
+                  Erlaubt sind 800 bis 6000 – auch diese Prüfung passiert in
+                  Python vor dem Speichern.
+                </p>
+              </div>
             </li>
-            <li>
+            <li class="db-col-item" role="button" tabindex="0" aria-expanded="false">
               <div class="db-col-row">
                 <span class="db-col">goal_set</span>
                 <span class="db-type">INTEGER</span>
                 <span></span>
+                <span class="db-col-toggle" aria-hidden="true">+</span>
               </div>
               <span class="db-desc"><code>1</code> heißt: das Ziel wurde selbst
               gespeichert. <code>0</code>: es steht noch der Standardwert.
               So erkennt die App, ob das Start-Formular nötig ist.</span>
+              <div class="db-col-more" hidden>
+                <span class="more-label">Beispiel</span>
+                <code>1</code>
+                <p>
+                  Eigentlich bräuchte man nur die Zahl
+                  <code>0</code>/<code>1</code>: Die App prüft mit
+                  <code>goal_is_set()</code>, ob das Einrichtungs-Formular
+                  angezeigt werden muss.
+                </p>
+              </div>
             </li>
           </ul>
         </div>
@@ -313,9 +442,10 @@
     <!-- ======================================================
          03) Schritt für Schritt: ein Eintrag wird gespeichert
          ====================================================== -->
-    <section class="card db-card fade-in">
+    <section class="card db-card fade-in" id="kap-3">
       <div class="card-head">
         <div>
+          <span class="card-index">KAPITEL 03</span>
           <h2>Ein Eintrag – Schritt für Schritt</h2>
           <p class="section-hint">
             Was passiert, sobald du auf „Speichern“ klickst? Alle Codebeispiele
@@ -332,8 +462,10 @@
             <h4>Der Browser schickt das Formular an den Server</h4>
             <p>
               Das Formular auf dem Dashboard hat <code>method="POST"</code> und
-              geht an die Adresse <code>/add_entry</code>. Flask leitet diese
-              Anfrage an die Python-Funktion <code>add_entry()</code> weiter.
+              geht an die Adresse <code>/add_entry</code>.
+              <button type="button" class="db-term" data-tip="Kleines Python-Webframework: nimmt Anfragen aus dem Browser entgegen und ruft die passende Python-Funktion auf.">Flask</button>
+              leitet diese Anfrage an die Python-Funktion
+              <code>add_entry()</code> weiter.
             </p>
           </div>
         </div>
@@ -369,9 +501,9 @@
           <div>
             <h4>Die Kalorien der Portion werden berechnet</h4>
             <p>
-              Das Spektrum pro 100&nbsp;g allein sagt wenig – interessant ist der
-              Wert der tatsächlichen Portion. Die Rechnung läuft in Python und
-              wird als fertige Zahl mit in die Datenbank geschrieben:
+              Der Wert pro 100&nbsp;g allein sagt wenig – interessant ist die
+              tatsächliche Portion. Die Rechnung läuft in Python und wird als
+              fertige Zahl mit in die Datenbank geschrieben:
             </p>
             <div class="codebox">
               <div class="codebox-head">
@@ -392,9 +524,12 @@
             <h4>Der Eintrag geht per INSERT in die Tabelle</h4>
             <p>
               Jetzt schreibt SQLite die Zeile. Auffällig sind die
-              <code>?</code>-Platzhalter: Der SQL-Text und die Werte werden
-              getrennt übergeben (siehe Abschnitt 04, warum das wichtig ist).
-              <code>commit()</code> speichert die Änderung dauerhaft in der Datei.
+              <code>?</code>-
+              <button type="button" class="db-term" data-tip="Das ? im SQL-Text. Der Wert wird getrennt vom Befehl übergeben und gilt immer nur als Daten – niemals als ausführbarer SQL-Code.">Platzhalter</button>:
+              Der SQL-Text und die Werte werden getrennt übergeben (mehr dazu in
+              Kapitel 04).
+              <button type="button" class="db-term" data-tip="Schreibt alle Änderungen seit dem letzten commit dauerhaft in die Datei database.db. Ohne diesen Aufruf wäre die Änderung nach dem Neustart weg.">commit()</button>
+              speichert die Änderung dauerhaft in der Datei.
             </p>
             <div class="codebox">
               <div class="codebox-head">
@@ -452,9 +587,10 @@ stats = connection.execute(
     <!-- ======================================================
          04) Ändern, Löschen, Tagesziel – und warum Platzhalter
          ====================================================== -->
-    <section class="card db-card fade-in">
+    <section class="card db-card fade-in" id="kap-4">
       <div class="card-head">
         <div>
+          <span class="card-index">KAPITEL 04</span>
           <h2>Ändern, Löschen, Tagesziel speichern</h2>
           <p class="section-hint">
             Es gibt vier SQL-Befehle, die in dieser App gebraucht werden:
@@ -465,7 +601,7 @@ stats = connection.execute(
 
       <div class="db-sec" style="margin-top:0;">
         <div class="db-sec-head">
-          <span class="db-sec-num">02</span>
+          <span class="db-sec-num">01</span>
           <h3>UPDATE – einen Eintrag überarbeiten</h3>
         </div>
         <p class="db-lead">
@@ -495,7 +631,7 @@ stats = connection.execute(
 
       <div class="db-sec">
         <div class="db-sec-head">
-          <span class="db-sec-num">03</span>
+          <span class="db-sec-num">02</span>
           <h3>DELETE – einen Eintrag entfernen</h3>
         </div>
         <p class="db-lead">
@@ -516,7 +652,7 @@ connection.commit()</code></pre>
 
       <div class="db-sec">
         <div class="db-sec-head">
-          <span class="db-sec-num">04</span>
+          <span class="db-sec-num">03</span>
           <h3>Das Tagesziel in settings speichern</h3>
         </div>
         <p class="db-lead">
@@ -541,13 +677,15 @@ connection.commit()</code></pre>
 
       <div class="db-sec">
         <div class="db-sec-head">
-          <span class="db-sec-num">05</span>
-          <h3>Warum diese ?-Platzhalter? (SQL-Injection)</h3>
+          <span class="db-sec-num">04</span>
+          <h3>Warum diese ?-Platzhalter?</h3>
         </div>
         <p class="db-lead">
           Man könnte SQL-Text einfach zusammensetzen – aus
-          <code>"..." + name + "..."</code>. Das ist aber gefährlich: Wer
-          statt eines Namens <code>' ; DROP TABLE entries; --</code> eingibt,
+          <code>"..." + name + "..."</code>. Das ist aber gefährlich: eine
+          Attacke namens
+          <button type="button" class="db-term" data-tip="Angriffstechnik: Eingaben aus dem Formular enthalten Teile eines SQL-Befehls und verändern so die Abfrage. Beispiel: statt eines Namens tippt man ' ; DROP TABLE entries; -- ein.">SQL-Injection</button>.
+          Wer statt eines Namens <code>' ; DROP TABLE entries; --</code> eingibt,
           hängt seinen Befehl hinten an, und die Tabelle ist weg. Mit
           Platzhaltern behandelt SQLite die Eingabe konsequent als reine
           Daten – sie kann nie als SQL-Befehl ausgeführt werden.
@@ -581,9 +719,10 @@ connection.execute(
     <!-- ======================================================
          05) Warum die Datenbank so ist, wie sie ist
          ====================================================== -->
-    <section class="card db-card fade-in">
+    <section class="card db-card fade-in" id="kap-5">
       <div class="card-head">
         <div>
+          <span class="card-index">KAPITEL 05</span>
           <h2>Warum sieht der Code so aus, wie er aussieht?</h2>
           <p class="section-hint">
             Die typischen Fragen mit Begründung – falls im Kolloquium danach
@@ -628,10 +767,12 @@ connection.execute(
           <h4>Warum CREATE TABLE IF NOT EXISTS?</h4>
           <p>
             <code>init_database()</code> läuft bei jedem Programmstart. Der
-            Zusatz <code>IF NOT EXISTS</code> sorgt dafür, dass Tabellen nur
-            angelegt werden, wenn sie fehlen. Ein Neustart löscht also
-            niemals bestehende Einträge – erst das manuelle Löschen der Datei
-            <code>database.db</code> setzt die App zurück.
+            Zusatz
+            <button type="button" class="db-term" data-tip="SQL-Zusatz: Der Befehl tut einfach nichts, falls die Tabelle schon existiert. Bestehende Daten bleiben also garantiert erhalten.">IF NOT EXISTS</button>
+            sorgt dafür, dass Tabellen nur angelegt werden, wenn sie fehlen.
+            Ein Neustart löscht also niemals bestehende Einträge – erst das
+            manuelle Löschen der Datei <code>database.db</code> setzt die App
+            zurück.
           </p>
         </div>
         <div class="db-why">
@@ -646,11 +787,12 @@ connection.execute(
         <div class="db-why">
           <h4>Warum row_factory = sqlite3.Row?</h4>
           <p>
-            Standardmäßig liefert SQLite Tupel wie <code>('Apfel', 52.0)</code>,
-            also nur Werte in Reihenfolge. Mit <code>Row</code> kann das
-            Ergebnis über den Spaltennamen angesprochen werden:
-            <code>zeile["name"]</code> – lesbarer und unanfällig, wenn sich
-            mal die Spaltenreihenfolge ändert.
+            Standardmäßig liefert SQLite
+            <button type="button" class="db-term" data-tip="Eine feste Liste von Werten in fester Reihenfolge, z. B. ('Apfel', 52.0) – ganz ohne Spaltennamen.">Tupel</button>
+            wie <code>('Apfel', 52.0)</code>, also nur Werte in Reihenfolge.
+            Mit <code>Row</code> kann das Ergebnis über den Spaltennamen
+            angesprochen werden: <code>zeile["name"]</code> – lesbarer und
+            unanfällig, wenn sich mal die Spaltenreihenfolge ändert.
           </p>
         </div>
       </div>
@@ -659,9 +801,10 @@ connection.execute(
     <!-- ======================================================
          06) Häufige Fragen
          ====================================================== -->
-    <section class="card db-card fade-in">
+    <section class="card db-card fade-in" id="kap-6">
       <div class="card-head">
         <div>
+          <span class="card-index">KAPITEL 06</span>
           <h2>Häufige Fragen</h2>
         </div>
       </div>
@@ -731,4 +874,8 @@ connection.execute(
       </p>
     </section>
 
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='datenbank.js') }}"></script>
 {% endblock %}
