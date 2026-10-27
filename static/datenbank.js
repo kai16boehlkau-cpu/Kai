@@ -207,4 +207,20 @@
     nachOben.classList.toggle("show", window.scrollY > 500);
   }, { passive: true });
 
+  /* --------------------------------------------------------
+     6) Selbsttest: Frage anklicken, Antwort aufdecken
+     Ein Klick auf die Fragezeile blendet die Lösung ein
+     (bzw. blendet sie wieder aus).
+     -------------------------------------------------------- */
+  document.querySelectorAll(".db-q-btn").forEach(function (knopf) {
+    knopf.addEventListener("click", function () {
+      var offen = knopf.getAttribute("aria-expanded") === "true";
+      knopf.setAttribute("aria-expanded", offen ? "false" : "true");
+      var antwort = knopf.nextElementSibling;
+      if (antwort && antwort.classList.contains("db-q-answer")) {
+        antwort.hidden = offen;
+      }
+    });
+  });
+
 })();

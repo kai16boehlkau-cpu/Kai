@@ -34,7 +34,50 @@
       <a class="db-toc-link" href="#kap-4">04 · SQL-Befehle</a>
       <a class="db-toc-link" href="#kap-5">05 · Warum so?</a>
       <a class="db-toc-link" href="#kap-6">06 · Fragen</a>
+      <a class="db-toc-link" href="#kap-7">07 · Selbsttest</a>
     </nav>
+
+    <!-- Schnell-Ueberblick: das Wichtigste in Kuerze -->
+    <section class="card db-card fade-in" id="ueberblick">
+      <div class="card-head">
+        <div>
+          <span class="card-index">IN 30 SEKUNDEN</span>
+          <h2>Das Wichtigste auf einen Blick</h2>
+          <p class="section-hint">
+            Keine Zeit? Diese fünf Sätze reichen, um die Seite zu verstehen –
+            den Rest kannst du dir später in Ruhe anschauen.
+          </p>
+        </div>
+        <span class="head-badge">Kurzfassung</span>
+      </div>
+
+      <ol class="db-quick-list">
+        <li>
+          <strong>Alles liegt in einer einzigen Datei:</strong>
+          <code>database.db</code> liegt direkt neben <code>app.py</code>.
+          Löscht du diese Datei, sind alle Daten weg.
+        </li>
+        <li>
+          <strong>Es gibt genau zwei Tabellen:</strong>
+          <code>entries</code> (jede Mahlzeit ist eine eigene Zeile) und
+          <code>settings</code> (dein Tagesziel, immer eine Zeile).
+        </li>
+        <li>
+          <strong>Python macht die Arbeit:</strong> Nach dem Klick auf
+          „Speichern“ prüft <code>app.py</code> die Eingaben, berechnet die
+          Kalorien und schreibt eine neue Zeile in die Datenbank.
+        </li>
+        <li>
+          <strong>Vier SQL-Befehle reichen:</strong> SELECT (lesen), INSERT
+          (einfügen), UPDATE (ändern), DELETE (löschen).
+        </li>
+        <li>
+          <strong>Sicherheit dank ?-Platzhaltern:</strong> Eingaben kommen
+          nie als SQL-Text in die Datenbank, sondern immer getrennt über
+          <code>?</code> – so ist SQL-Injection unmöglich.
+        </li>
+      </ol>
+    </section>
 
     <!-- ======================================================
          01) Was ist eine Datenbank überhaupt?
@@ -92,6 +135,15 @@
             eine Datei.
           </p>
         </div>
+      </div>
+
+      <div class="db-merke">
+        <span class="merke-label">Merke</span>
+        Eine Datenbank ist im Grunde nichts Geheimnisvolles: Es sind Tabellen
+        wie in einer Tabellenkalkulation – nur in einer eigenen Datei, die die
+        Werte fest kontrolliert. Wenn du später „Datenbank“ hörst, denk an
+        <code>database.db</code> und die zwei Tabellen <code>entries</code>
+        und <code>settings</code>.
       </div>
     </section>
 
@@ -437,6 +489,15 @@
           </table>
         </div>
       </div>
+
+      <div class="db-merke">
+        <span class="merke-label">Merke</span>
+        Merke dir nur zwei Sätze: <strong>Jede Mahlzeit ist eine Zeile in
+        <code>entries</code></strong> und <strong>das Tagesziel steht genau
+        einmal in <code>settings</code></strong>. Alle weiteren Spalten
+        erklären sich von selbst, wenn du die Beispieltaben von oben
+        betrachtest.
+      </div>
     </section>
 
     <!-- ======================================================
@@ -582,6 +643,14 @@ stats = connection.execute(
           </div>
         </div>
       </div>
+
+      <div class="db-merke">
+        <span class="merke-label">Merke</span>
+        Der Weg eines Eintrags lautet immer gleich: <strong>prüfen →
+        Kalorien berechnen → INSERT → commit</strong> – und beim Anzeigen
+        danach <strong>SELECT</strong>. Wenn du im Kolloquium „Was passiert
+        beim Speichern?“ hörst, reicht diese Kette als Antwort.
+      </div>
     </section>
 
     <!-- ======================================================
@@ -714,6 +783,15 @@ connection.execute(
           </div>
         </div>
       </div>
+
+      <div class="db-merke is-tipp">
+        <span class="merke-label">Tipp fürs Kolloquium</span>
+        Die vier Befehle einfach als Eselsbrücke merken: <strong>SELECT =
+        lesen, INSERT = rein, UPDATE = umschreiben, DELETE = raus</strong>.
+        Und immer betonen, warum <code>?</code> steht: „Der Wert wird
+        getrennt übergeben und kann nie als SQL-Befehl ausgeführt werden –
+        das schützt vor SQL-Injection.“
+      </div>
     </section>
 
     <!-- ======================================================
@@ -796,6 +874,14 @@ connection.execute(
           </p>
         </div>
       </div>
+
+      <div class="db-merke">
+        <span class="merke-label">Merke</span>
+        Hinter den „Warum“-Fragen steckt fast immer derselbe Gedanke:
+        <strong>Die Daten bleiben richtig und sicher</strong> – auch wenn das
+        Programm abstürzt, neu gestartet wird oder jemand eine falsche
+        Eingabe macht. Wer das im Kolloquium sagt, hat die Frage verstanden.
+      </div>
     </section>
 
     <!-- ======================================================
@@ -872,6 +958,135 @@ connection.execute(
         dabei ausschließlich mit <code>?</code>-Platzhaltern, damit
         Benutzereingaben niemals als SQL ausgeführt werden können.
       </p>
+    </section>
+
+    <!-- ======================================================
+         07) Selbsttest: pruefe dein Wissen
+         ====================================================== -->
+    <section class="card db-card fade-in" id="kap-7">
+      <div class="card-head">
+        <div>
+          <span class="card-index">KAPITEL 07</span>
+          <h2>Selbsttest – prüfe dein Wissen</h2>
+          <p class="section-hint">
+            Klicke auf eine Frage und überlege zuerst die Antwort selbst –
+            dann aufdecken und vergleichen. So merkst du schnell, was noch
+            nicht sitzt.
+          </p>
+        </div>
+        <span class="head-badge">6 Fragen</span>
+      </div>
+
+      <div class="db-quiz">
+        <div class="db-q">
+          <button type="button" class="db-q-btn" aria-expanded="false">
+            <span class="db-q-num">1</span>
+            <span class="db-q-text">Wie heißt die Datei, in der alle Daten liegen?</span>
+            <span class="db-q-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="db-q-answer" hidden>
+            <span class="more-label">Antwort</span>
+            <p>
+              <code>database.db</code> – sie liegt direkt neben
+              <code>app.py</code>. Ohne diese Datei hat die App keine Daten
+              mehr; beim nächsten Start legt <code>init_database()</code>
+              sie mit leeren Tabellen neu an.
+            </p>
+          </div>
+        </div>
+
+        <div class="db-q">
+          <button type="button" class="db-q-btn" aria-expanded="false">
+            <span class="db-q-num">2</span>
+            <span class="db-q-text">Welche zwei Tabellen gibt es – und wofür?</span>
+            <span class="db-q-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="db-q-answer" hidden>
+            <span class="more-label">Antwort</span>
+            <p>
+              <code>entries</code> hält jede Mahlzeit als eigene Zeile
+              (Name, Gramm, Kalorien, Mahlzeit, Datum, Uhrzeit).
+              <code>settings</code> hält genau eine Zeile: dein Tagesziel
+              (<code>daily_goal</code> und ob es schon gesetzt wurde).
+            </p>
+          </div>
+        </div>
+
+        <div class="db-q">
+          <button type="button" class="db-q-btn" aria-expanded="false">
+            <span class="db-q-num">3</span>
+            <span class="db-q-text">Welche vier SQL-Befehle braucht die App – und was machen sie?</span>
+            <span class="db-q-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="db-q-answer" hidden>
+            <span class="more-label">Antwort</span>
+            <p>
+              <strong>SELECT</strong> liest Zeilen aus, <strong>INSERT</strong>
+              fügt eine neue Zeile hinzu, <strong>UPDATE</strong> ändert eine
+              bestehende Zeile und <strong>DELETE</strong> löscht sie.
+            </p>
+          </div>
+        </div>
+
+        <div class="db-q">
+          <button type="button" class="db-q-btn" aria-expanded="false">
+            <span class="db-q-num">4</span>
+            <span class="db-q-text">Warum steht in den SQL-Befehlen ein ? statt des Wertes?</span>
+            <span class="db-q-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="db-q-answer" hidden>
+            <span class="more-label">Antwort</span>
+            <p>
+              Der <code>?</code>-Platzhalter sorgt dafür, dass der Wert immer
+              nur als Daten gilt und nie als ausführbarer SQL-Befehl. Das
+              schützt vor <strong>SQL-Injection</strong>: Selbst
+              <code>' ; DROP TABLE entries; --</code> wäre dann nur ein
+              harmloser Name.
+            </p>
+          </div>
+        </div>
+
+        <div class="db-q">
+          <button type="button" class="db-q-btn" aria-expanded="false">
+            <span class="db-q-num">5</span>
+            <span class="db-q-text">Wann ist eine Änderung wirklich gespeichert?</span>
+            <span class="db-q-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="db-q-answer" hidden>
+            <span class="more-label">Antwort</span>
+            <p>
+              Erst nach <code>connection.commit()</code>. Davor liegt die
+              Änderung nur im Arbeitsspeicher und wäre nach dem Schließen
+              weg.
+            </p>
+          </div>
+        </div>
+
+        <div class="db-q">
+          <button type="button" class="db-q-btn" aria-expanded="false">
+            <span class="db-q-num">6</span>
+            <span class="db-q-text">Was passiert, wenn du database.db löschst?</span>
+            <span class="db-q-toggle" aria-hidden="true">+</span>
+          </button>
+          <div class="db-q-answer" hidden>
+            <span class="more-label">Antwort</span>
+            <p>
+              Alle Einträge und dein Tagesziel sind weg. Beim nächsten Start
+              erstellt <code>init_database()</code> die Datei neu mit leeren
+              Tabellen und einer Startzeile in <code>settings</code>
+              (<code>goal_set = 0</code>) – du musst dein Ziel also neu
+              einrichten.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-merke">
+        <span class="merke-label">So geht's weiter</span>
+        Alle sechs Antworten sitzen? Dann kannst du die Seite im Kolloquium
+        ruhig selbst erklären. Bei Fragen 3 und 4 wird am häufigsten
+        nachgehakt – die solltest du sicher im Schlaf aufsagen können.
+      </div>
     </section>
 
 {% endblock %}
