@@ -5,121 +5,729 @@
 {% block content %}
 
     <!-- ======================================================
-         DATENBANK: Übersicht der SQLite-Struktur
+         DATENBANK: Aufbau und Funktionsweise erklaert
          ====================================================== -->
     <section class="hero" id="datenbank">
       <div class="hero-text">
         <span class="kicker">Datenbank</span>
-        <h2>🗄️ So sieht die Datenbank aus</h2>
+        <h2>Wo deine Einträge wirklich liegen</h2>
         <p class="hero-sub">
-          Unser Kalorienzähler speichert alles in einer SQLite-Datenbank
-          (<code>database.db</code>) direkt neben der Programmdatei.
-          Es werden zwei Tabellen verwendet.
+          Wenn du ein Lebensmittel speicherst, verschwindet es nicht „irgendwo im
+          Programm“, sondern in einer Datei namens <code>database.db</code> –
+          eine SQLite-Datenbank direkt neben <code>app.py</code>. Auf dieser Seite
+          steht, was darin gespeichert ist, wie der Python-Code damit arbeitet
+          und warum manche Diele so gebaut sind, wie sie gebaut sind.
         </p>
       </div>
       <div class="hero-side">
-        <span class="status-chip">💾 SQLite · lokal</span>
+        <span class="status-chip status-ok">SQLite · eine einzige Datei</span>
       </div>
     </section>
 
-    <!-- Grobe Erklärung der vier wichtigsten Begriffe -->
-    <div class="db-explain">
-      <div class="db-chip chip-pk">
-        <strong>🔑 Primärschlüssel</strong>
-        <span>Spalte <code>id</code> – jede Zeile bekommt eine eindeutige Nummer. Damit kann Flask genau einen Eintrag ändern oder löschen.</span>
-      </div>
-      <div class="db-chip">
-        <strong>📝 TEXT</strong>
-        <span>Textfeld – z.&nbsp;B. der Name „Apfel" oder das Datum „2026-10-22".</span>
-      </div>
-      <div class="db-chip">
-        <strong>🔢 REAL</strong>
-        <span>Zahl mit Nachkommastellen – z.&nbsp;B. 379,5 kcal pro 100 g.</span>
-      </div>
-      <div class="db-chip">
-        <strong>🔢 INTEGER</strong>
-        <span>Ganze Zahl – z.&nbsp;B. die berechneten Kalorien der Portion (227).</span>
-      </div>
-    </div>
-
-    <!-- Die eigentliche „Zeichnung" der beiden Tabellen -->
+    <!-- ======================================================
+         01) Was ist eine Datenbank überhaupt?
+         ====================================================== -->
     <section class="card db-card fade-in">
       <div class="card-head">
         <div>
-          <h2>Tabellen-Diagramm</h2>
-          <p class="section-hint">So ist <code>database.db</code> aufgebaut.</p>
+          <h2>Was ist eine Datenbank überhaupt?</h2>
+          <p class="section-hint">Die Grundidee in zwei Minuten erklärt.</p>
         </div>
-        <span class="head-badge badge-hl">⚠️ Prüfungsrelevant</span>
       </div>
 
+      <div class="db-lead">
+        <p>
+          Stell dir eine Tabellenkalkulation vor, bei der du nicht aufpassen musst,
+          dass jemand eine Zeile verschiebt oder eine Formel überschreibt: So
+          ungefähr arbeitet eine Datenbank. Die Daten liegen in <strong>Tabellen</strong>
+          aus <strong>Zeilen</strong> (ein Eintrag pro Zeile) und <strong>Spalten</strong>
+          (ein Merkmal pro Spalte, z.&nbsp;B. „Name“ oder „Kalorien“). Jede Spalte
+          hat einen festen Datentyp – SQLite weist eine Zeile ab, in der in der
+          Kalorienspalte plötzlich Text steht. Genau diese Festigkeit ist der
+          Vorteil gegenüber einer einfachen Textdatei.
+        </p>
+      </div>
+
+      <div class="db-fact-grid">
+        <div class="db-fact">
+          <span class="fact-tag">Datei statt Server</span>
+          <h4>Alles in einer Datei</h4>
+          <p>
+            SQLite braucht keinen eigenen Datenbank-Server. Die ganze Datenbank
+            ist die eine Datei <code>database.db</code>. Zum „Sichern“ dieser App
+            kopiert man also im Zweifel einfach diese eine Datei.
+          </p>
+        </div>
+        <div class="db-fact">
+          <span class="fact-tag">Bereits enthalten</span>
+          <h4>In Python eingebaut</h4>
+          <p>
+            Das Modul <code>sqlite3</code> gehört zur Python-Standardausstattung.
+            Für das Projekt muss deshalb nichts installiert oder konfiguriert
+            werden – <code>import sqlite3</code> genügt.
+          </p>
+        </div>
+        <div class="db-fact">
+          <span class="fact-tag">Genau richtig</span>
+          <h4>Für ein Schulprojekt ideal</h4>
+          <p>
+            Eine App mit einer Person und ein paar hundert Einträgen braucht
+            keine große MySQL-Installation. SQLite schafft problemlos
+            mehrere hunderttausend Zeilen und ist trotzdem so simpel wie
+            eine Datei.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         02) Die zwei Tabellen
+         ====================================================== -->
+    <section class="card db-card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Die zwei Tabellen im Detail</h2>
+          <p class="section-hint">
+            Die Datenbank hat genau zwei Tabellen: <code>entries</code> für
+            Mahlzeiten und <code>settings</code> für das Tagesziel.
+          </p>
+        </div>
+        <span class="head-badge">Aufbau von database.db</span>
+      </div>
+
+      <!-- Glossar: Datentypen in Klartext -->
+      <div class="db-glossary">
+        <div class="db-chip chip-pk">
+          <strong>Primärschlüssel (PK)</strong>
+          <span>Die Spalte <code>id</code>: jede Zeile bekommt ihre eigene,
+          eindeutige Nummer. Damit findet das Programm später genau diese
+          Zeile wieder – auch wenn der Name zweimal vorkommt.</span>
+        </div>
+        <div class="db-chip">
+          <strong>TEXT</strong>
+          <span>Text. Wird hier für Namen (<code>Apfel</code>) und Datumsangaben
+          (<code>2026-10-22</code>) benutzt.</span>
+        </div>
+        <div class="db-chip">
+          <strong>REAL</strong>
+          <span>Eine Zahl mit Nachkommastellen, z.&nbsp;B.
+          <code>379.5</code> Kalorien pro 100&nbsp;g oder <code>150.5</code>&nbsp;Gramm
+          als portionsweise Menge.</span>
+        </div>
+        <div class="db-chip">
+          <strong>INTEGER</strong>
+          <span>Eine ganze Zahl ohne Nachkomma, z.&nbsp;B. die
+          <code>227</code> Kalorien einer Portion oder das Tagesziel
+          <code>2000</code>.</span>
+        </div>
+      </div>
+
+      <!-- Diagramm der beiden Tabellen -->
       <div class="db-diagram">
 
-        <!-- Tabelle 1: entries -->
         <div class="db-table db-entries">
           <div class="db-table-title">
             <span>entries</span>
-            <small>– alle Mahlzeiten-Einträge</small>
+            <small>– jede Mahlzeit ist eine Zeile</small>
           </div>
           <ul class="db-cols">
             <li>
-              <span class="db-col">id</span>
-              <span class="db-type">INTEGER</span>
-              <i class="pk-pill">PK</i>
+              <div class="db-col-row">
+                <span class="db-col">id</span>
+                <span class="db-type">INTEGER</span>
+                <i class="pk-pill">PK</i>
+              </div>
+              <span class="db-desc">Eindeutige Nummer der Zeile. Über sie wird
+              ein Eintrag später geändert oder gelöscht.</span>
             </li>
-            <li><span class="db-col">name</span><span class="db-type">TEXT</span><span></span></li>
-            <li><span class="db-col">calories_per_100g</span><span class="db-type">REAL</span><span></span></li>
-            <li><span class="db-col">amount_grams</span><span class="db-type">REAL</span><span></span></li>
-            <li><span class="db-col">calories</span><span class="db-type">INTEGER</span><span></span></li>
-            <li><span class="db-col">meal</span><span class="db-type">TEXT</span><span></span></li>
-            <li><span class="db-col">date</span><span class="db-type">TEXT</span><span></span></li>
-            <li><span class="db-col">created_at</span><span class="db-type">TEXT</span><span></span></li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">name</span>
+                <span class="db-type">TEXT</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Was gegessen wurde, z.&nbsp;B. „Haferflocken
+              mit Milch“ (höchstens 80 Zeichen).</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">calories_per_100g</span>
+                <span class="db-type">REAL</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Der Kalorienwert pro 100&nbsp;g, den du
+              eingetragen hast – z.&nbsp;B. <code>379.5</code>.</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">amount_grams</span>
+                <span class="db-type">REAL</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Wie viel gegessen wurde, z.&nbsp;B.
+              <code>60</code> Gramm.</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">calories</span>
+                <span class="db-type">INTEGER</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Kalorien der Portion, in Python berechnet:
+              <code>379.5 × 60 / 100 = 228</code>. Wird mitgespeichert, damit
+              die Tagesumschau schnell addieren kann.</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">meal</span>
+                <span class="db-type">TEXT</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Eine von vier Mahlzeiten:
+              Frühstück, Mittagessen, Abendessen oder Snack.</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">date</span>
+                <span class="db-type">TEXT</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Der Tag der Mahlzeit im Format
+              <code>JJJJ-MM-TT</code>, z.&nbsp;B. <code>2026-10-22</code>.</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">created_at</span>
+                <span class="db-type">TEXT</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Uhrzeit des Speicherns, z.&nbsp;B.
+              <code>16:41:07</code>. Damit bleibt die Reihenfolge der Einträge
+              eines Tages erhalten.</span>
+            </li>
           </ul>
-          <p class="db-table-note">
-            <code>calories</code> wird in Python berechnet:
-            <code>kcal_pro_100g × gramm / 100</code>.
-          </p>
         </div>
 
-        <!-- Verbindungstext zwischen den Tabellen -->
         <div class="db-vs">
-          <span class="db-vs-icon">🔗</span>
-          <strong>verknüpft</strong>
+          <span class="db-vs-icon">↔</span>
+          <strong>getrennt gespeichert</strong>
           <small>
-            Die Einstellungen liegen bewusst in einer eigenen Tabelle:
-            So bleibt das Tagesziel (<code>settings.daily_goal</code>)
-            getrennt von den Mahlzeiten (<code>entries</code>).
+            Das Tagesziel hat mit Mahlzeiten nichts zu tun – deshalb steht es
+            nicht als Spalte in <code>entries</code>, sondern in der eigenen
+            Tabelle <code>settings</code>.
           </small>
         </div>
 
-        <!-- Tabelle 2: settings -->
         <div class="db-table db-settings">
           <div class="db-table-title">
             <span>settings</span>
-            <small>– Tagesziel &amp; Status</small>
+            <small>– immer genau eine Zeile</small>
           </div>
           <ul class="db-cols">
             <li>
-              <span class="db-col">id</span>
-              <span class="db-type">INTEGER</span>
-              <i class="pk-pill">PK</i>
+              <div class="db-col-row">
+                <span class="db-col">id</span>
+                <span class="db-type">INTEGER</span>
+                <i class="pk-pill">PK</i>
+              </div>
+              <span class="db-desc">Immer <code>1</code> – es gibt nur diese
+              eine Zeile in der ganzen Tabelle.</span>
             </li>
-            <li><span class="db-col">daily_goal</span><span class="db-type">INTEGER</span><span></span></li>
-            <li><span class="db-col">goal_set</span><span class="db-type">INTEGER</span><span></span></li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">daily_goal</span>
+                <span class="db-type">INTEGER</span>
+                <span></span>
+              </div>
+              <span class="db-desc">Das Tagesziel in kcal, z.&nbsp;B.
+              <code>2200</code>.</span>
+            </li>
+            <li>
+              <div class="db-col-row">
+                <span class="db-col">goal_set</span>
+                <span class="db-type">INTEGER</span>
+                <span></span>
+              </div>
+              <span class="db-desc"><code>1</code> heißt: das Ziel wurde selbst
+              gespeichert. <code>0</code>: es steht noch der Standardwert.
+              So erkennt die App, ob das Start-Formular nötig ist.</span>
+            </li>
           </ul>
-          <p class="db-table-note">
-            <code>goal_set</code>: <strong>0</strong> = Ziel noch nicht festgelegt,
-            <strong>1</strong> = vom Benutzer gespeichert.
-            Es gibt immer nur <strong>eine</strong> Zeile (<code>id = 1</code>).
+        </div>
+      </div>
+
+      <!-- So sieht der tatsächliche Inhalt aus -->
+      <div class="db-sec">
+        <div class="db-sec-head">
+          <span class="db-sec-num">01</span>
+          <h3>So sieht der Inhalt wirklich aus</h3>
+        </div>
+        <p class="db-lead">
+          Die obige Zeichnung zeigt den Aufbau. Tatsächlich gespeichert sind
+          einfach nur Zeilen mit Werten – nach dem Speichern von 60&nbsp;g
+          Haferflocken und einem Apfel am 22.10.2026 sähe die Tabelle
+          <code>entries</code> so aus:
+        </p>
+
+        <div class="db-table-scroll">
+          <table class="db-data">
+            <thead>
+              <tr>
+                <th>id</th><th>name</th><th>calories_per_100g</th>
+                <th>amount_grams</th><th>calories</th><th>meal</th>
+                <th>date</th><th>created_at</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>4</td><td>Haferflocken mit Milch</td><td>379.5</td>
+                <td>60</td><td>228</td><td>Frühstück</td>
+                <td>2026-10-22</td><td>07:12:44</td>
+              </tr>
+              <tr>
+                <td>5</td><td>Apfel</td><td>52.0</td>
+                <td>150</td><td>78</td><td>Snack</td>
+                <td>2026-10-22</td><td>16:41:07</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="db-lead" style="margin-top:14px;">
+          Und <code>settings</code> enthält genau eine Zeile:
+        </p>
+
+        <div class="db-table-scroll">
+          <table class="db-data" style="min-width:320px;">
+            <thead>
+              <tr><th>id</th><th>daily_goal</th><th>goal_set</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>2200</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         03) Schritt für Schritt: ein Eintrag wird gespeichert
+         ====================================================== -->
+    <section class="card db-card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Ein Eintrag – Schritt für Schritt</h2>
+          <p class="section-hint">
+            Was passiert, sobald du auf „Speichern“ klickst? Alle Codebeispiele
+            sind Ausschnitte aus <code>app.py</code>.
           </p>
         </div>
       </div>
 
+      <div class="db-steps">
+
+        <div class="db-step">
+          <span class="db-step-num">1</span>
+          <div>
+            <h4>Der Browser schickt das Formular an den Server</h4>
+            <p>
+              Das Formular auf dem Dashboard hat <code>method="POST"</code> und
+              geht an die Adresse <code>/add_entry</code>. Flask leitet diese
+              Anfrage an die Python-Funktion <code>add_entry()</code> weiter.
+            </p>
+          </div>
+        </div>
+
+        <div class="db-step">
+          <span class="db-step-num">2</span>
+          <div>
+            <h4>Python prüft jede Eingabe, bevor etwas gespeichert wird</h4>
+            <p>
+              Was im Browser eingegeben wurde, kann alles Mögliche enthalten –
+              auch Unsinn. Deshalb prüft <code>validate_entry_form()</code> jeden
+              Wert einzeln und meldet verständliche Fehler statt späterer
+              Datenbank-Chaos-Meldungen:
+            </p>
+            <div class="codebox">
+              <div class="codebox-head">
+                <span class="codebox-dots"><i></i><i></i><i></i></span>
+                <span class="codebox-file">app.py – validate_entry_form()</span>
+                <span class="codebox-lang">Python</span>
+              </div>
+              <pre><code><span class="kw">if</span> name == <span class="str">""</span>:
+    <span class="kw">return</span> {<span class="str">"error"</span>: <span class="str">"Bitte gib einen Namen für das Lebensmittel ein."</span>}
+<span class="kw">if</span> calories_per_100g &lt;= <span class="num">0</span> <span class="kw">or</span> calories_per_100g &gt; <span class="num">900</span>:
+    <span class="kw">return</span> {<span class="str">"error"</span>: <span class="str">"Kalorien pro 100 g müssen zwischen 1 und 900 liegen."</span>}
+<span class="kw">if</span> meal <span class="kw">not in</span> MEALS:
+    <span class="kw">return</span> {<span class="str">"error"</span>: <span class="str">"Bitte wähle eine gültige Mahlzeit aus."</span>}</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-step">
+          <span class="db-step-num">3</span>
+          <div>
+            <h4>Die Kalorien der Portion werden berechnet</h4>
+            <p>
+              Das Spektrum pro 100&nbsp;g allein sagt wenig – interessant ist der
+              Wert der tatsächlichen Portion. Die Rechnung läuft in Python und
+              wird als fertige Zahl mit in die Datenbank geschrieben:
+            </p>
+            <div class="codebox">
+              <div class="codebox-head">
+                <span class="codebox-dots"><i></i><i></i><i></i></span>
+                <span class="codebox-file">app.py – calculate_calories()</span>
+                <span class="codebox-lang">Python</span>
+              </div>
+              <pre><code><span class="cmt"># Kalorien = Kalorien pro 100 g x Gramm / 100</span>
+<span class="cmt"># Beispiel: 379.5 x 60 / 100 = 227.7 -> auf 228 gerundet</span>
+<span class="kw">return</span> <span class="fn">round</span>(calories_per_100g * amount_grams / <span class="num">100</span>)</code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-step">
+          <span class="db-step-num">4</span>
+          <div>
+            <h4>Der Eintrag geht per INSERT in die Tabelle</h4>
+            <p>
+              Jetzt schreibt SQLite die Zeile. Auffällig sind die
+              <code>?</code>-Platzhalter: Der SQL-Text und die Werte werden
+              getrennt übergeben (siehe Abschnitt 04, warum das wichtig ist).
+              <code>commit()</code> speichert die Änderung dauerhaft in der Datei.
+            </p>
+            <div class="codebox">
+              <div class="codebox-head">
+                <span class="codebox-dots"><i></i><i></i><i></i></span>
+                <span class="codebox-file">app.py – add_entry()</span>
+                <span class="codebox-lang">Python + SQL</span>
+              </div>
+              <pre><code>connection.execute(
+    <span class="str">"""
+    INSERT INTO entries
+        (name, calories_per_100g, amount_grams, calories, meal, date, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+    """</span>,
+    (<span class="str">"Haferflocken mit Milch"</span>, <span class="num">379.5</span>, <span class="num">60</span>, <span class="num">228</span>,
+     <span class="str">"Frühstück"</span>, <span class="str">"2026-10-22"</span>, <span class="str">"07:12:44"</span>),
+)
+connection.commit()  <span class="cmt"># erst hier ist die Zeile wirklich gespeichert</span></code></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-step">
+          <span class="db-step-num">5</span>
+          <div>
+            <h4>Die Seite liest den Tag mit SELECT wieder aus</h4>
+            <p>
+              Nach dem Speichern leitet Flask zurück zum Dashboard. Dort holt
+              <code>index()</code> alle Einträge des gewählten Tages aus der
+              Tabelle – wieder mit Platzhalter für das Datum – und addiert
+              zusätzlich die Kalorien direkt in SQL:
+            </p>
+            <div class="codebox">
+              <div class="codebox-head">
+                <span class="codebox-dots"><i></i><i></i><i></i></span>
+                <span class="codebox-file">app.py – index()</span>
+                <span class="codebox-lang">Python + SQL</span>
+              </div>
+              <pre><code>rows = connection.execute(
+    <span class="str">"SELECT * FROM entries WHERE date = ? ORDER BY created_at"</span>,
+    (selected_date,),   <span class="cmt"># z.B. "2026-10-22"</span>
+).fetchall()
+
+<span class="cmt"># SUM addiert alle Kalorien des Tages, COUNT zählt die Einträge</span>
+stats = connection.execute(
+    <span class="str">"SELECT COALESCE(SUM(calories), 0) AS total, COUNT(*) AS count "</span>
+    <span class="str">"FROM entries WHERE date = ?"</span>,
+    (selected_date,),
+).fetchone()</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         04) Ändern, Löschen, Tagesziel – und warum Platzhalter
+         ====================================================== -->
+    <section class="card db-card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Ändern, Löschen, Tagesziel speichern</h2>
+          <p class="section-hint">
+            Es gibt vier SQL-Befehle, die in dieser App gebraucht werden:
+            SELECT, INSERT, UPDATE und DELETE.
+          </p>
+        </div>
+      </div>
+
+      <div class="db-sec" style="margin-top:0;">
+        <div class="db-sec-head">
+          <span class="db-sec-num">02</span>
+          <h3>UPDATE – einen Eintrag überarbeiten</h3>
+        </div>
+        <p class="db-lead">
+          Wird im Formular etwas geändert, ruft die App
+          <code>/update_entry/&lt;id&gt;</code> auf. Die <code>id</code> der Zeile
+          ist dabei der Anker: Ohne sie müsste man raten, welche der mehreren
+          „Apfel“-Zeilen gemeint ist.
+        </p>
+        <div class="codebox">
+          <div class="codebox-head">
+            <span class="codebox-dots"><i></i><i></i><i></i></span>
+            <span class="codebox-file">app.py – update_entry()</span>
+            <span class="codebox-lang">Python + SQL</span>
+          </div>
+          <pre><code>connection.execute(
+    <span class="str">"""
+    UPDATE entries
+    SET name = ?, calories_per_100g = ?, amount_grams = ?,
+        calories = ?, meal = ?, date = ?
+    WHERE id = ?
+    """</span>,
+    (<span class="str">"Apfel"</span>, <span class="num">52.0</span>, <span class="num">150</span>, <span class="num">78</span>,
+     <span class="str">"Snack"</span>, <span class="str">"2026-10-22"</span>, <span class="num">5</span>),   <span class="cmt"># 5 = die alte id bleibt erhalten</span>
+)</code></pre>
+        </div>
+      </div>
+
+      <div class="db-sec">
+        <div class="db-sec-head">
+          <span class="db-sec-num">03</span>
+          <h3>DELETE – einen Eintrag entfernen</h3>
+        </div>
+        <p class="db-lead">
+          Löschen geht mit einer einzigen Zeile. Auch hier entscheidet wieder
+          die <code>id</code>, welche Zeile gelöscht wird – alle anderen
+          Zeilen bleiben unangetastet.
+        </p>
+        <div class="codebox">
+          <div class="codebox-head">
+            <span class="codebox-dots"><i></i><i></i><i></i></span>
+            <span class="codebox-file">app.py – delete_entry()</span>
+            <span class="codebox-lang">Python + SQL</span>
+          </div>
+          <pre><code>connection.execute(<span class="str">"DELETE FROM entries WHERE id = ?"</span>, (entry_id,))
+connection.commit()</code></pre>
+        </div>
+      </div>
+
+      <div class="db-sec">
+        <div class="db-sec-head">
+          <span class="db-sec-num">04</span>
+          <h3>Das Tagesziel in settings speichern</h3>
+        </div>
+        <p class="db-lead">
+          Das Tagesziel wird nie neu eingefügt, sondern nur geändert – es steht
+          ja schon die eine Zeile mit <code>id = 1</code> da. Zusätzlich wird
+          <code>goal_set</code> auf <code>1</code> gesetzt: die App merkt sich
+          so, dass das Ziel nun bewusst gewählt wurde und das Start-Formular
+          nicht mehr nötig ist.
+        </p>
+        <div class="codebox">
+          <div class="codebox-head">
+            <span class="codebox-dots"><i></i><i></i><i></i></span>
+            <span class="codebox-file">app.py – update_goal()</span>
+            <span class="codebox-lang">Python + SQL</span>
+          </div>
+          <pre><code>connection.execute(
+    <span class="str">"UPDATE settings SET daily_goal = ?, goal_set = 1 WHERE id = 1"</span>,
+    (<span class="num">2200</span>,),
+)</code></pre>
+        </div>
+      </div>
+
+      <div class="db-sec">
+        <div class="db-sec-head">
+          <span class="db-sec-num">05</span>
+          <h3>Warum diese ?-Platzhalter? (SQL-Injection)</h3>
+        </div>
+        <p class="db-lead">
+          Man könnte SQL-Text einfach zusammensetzen – aus
+          <code>"..." + name + "..."</code>. Das ist aber gefährlich: Wer
+          statt eines Namens <code>' ; DROP TABLE entries; --</code> eingibt,
+          hängt seinen Befehl hinten an, und die Tabelle ist weg. Mit
+          Platzhaltern behandelt SQLite die Eingabe konsequent als reine
+          Daten – sie kann nie als SQL-Befehl ausgeführt werden.
+        </p>
+        <div class="db-cmp">
+          <div class="codebox is-bad">
+            <div class="codebox-head">
+              <span class="codebox-file">Unsicher – so macht man es nicht</span>
+              <span class="codebox-lang">Python</span>
+            </div>
+            <pre><code><span class="cmt"># name kommt direkt aus dem Formular!</span>
+sql = <span class="str">"SELECT * FROM entries "</span> \
+      <span class="str">"WHERE name = '"</span> + name + <span class="str">"'"</span>
+connection.execute(sql)</code></pre>
+          </div>
+          <div class="codebox is-good">
+            <div class="codebox-head">
+              <span class="codebox-file">Sicher – so wie in app.py</span>
+              <span class="codebox-lang">Python</span>
+            </div>
+            <pre><code><span class="cmt"># Der Wert wandert getrennt vom SQL-Text:</span>
+connection.execute(
+    <span class="str">"SELECT * FROM entries WHERE name = ?"</span>,
+    (name,),
+)</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         05) Warum die Datenbank so ist, wie sie ist
+         ====================================================== -->
+    <section class="card db-card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Warum sieht der Code so aus, wie er aussieht?</h2>
+          <p class="section-hint">
+            Die typischen Fragen mit Begründung – falls im Kolloquium danach
+            gefragt wird.
+          </p>
+        </div>
+      </div>
+
+      <div class="db-why-grid">
+        <div class="db-why">
+          <h4>Warum zwei Tabellen statt einer großen?</h4>
+          <p>
+            Das Tagesziel ändert sich höchstens alle paar Wochen, Mahlzeiten
+            mehrmals täglich. Würde <code>daily_goal</code> in jeder
+            Mahlzeitenzeile mitstehen, müsste man bei jeder Änderung alle
+            Zeilen anpassen – und alte Einträge würden rückwirkend „umgeschrieben“.
+            In <code>settings</code> steht das Ziel genau einmal.
+          </p>
+        </div>
+        <div class="db-why">
+          <h4>Warum Datumsangaben als TEXT?</h4>
+          <p>
+            Das Format <code>JJJJ-MM-TT</code> (z.&nbsp;B.
+            <code>2026-10-22</code>) sortiert sich von selbst chronologisch:
+            „2026-10-22“ steht vor „2026-11-01“, obwohl das Wort
+            „Oktober“ alphabetisch nach „November“ käme. Auch
+            <code>WHERE date = ?</code> funktioniert damit ohne weitere Tricks.
+          </p>
+        </div>
+        <div class="db-why">
+          <h4>Warum calories mit speichern, obwohl es berechenbar ist?</h4>
+          <p>
+            Man könnte die Kalorien jederzeit aus Wert und Menge neu
+            berechnen. Das wird aber ständig gebraucht: Der Kalender und das
+            Dashboard addieren <code>SUM(calories)</code> über ganze Monate.
+            Eine fertig berechnete Spalte lässt sich direkt summieren, das
+            Ergebnis ist außerdem immer gleich – auch wenn später jemand die
+            Rechenlogik ändert.
+          </p>
+        </div>
+        <div class="db-why">
+          <h4>Warum CREATE TABLE IF NOT EXISTS?</h4>
+          <p>
+            <code>init_database()</code> läuft bei jedem Programmstart. Der
+            Zusatz <code>IF NOT EXISTS</code> sorgt dafür, dass Tabellen nur
+            angelegt werden, wenn sie fehlen. Ein Neustart löscht also
+            niemals bestehende Einträge – erst das manuelle Löschen der Datei
+            <code>database.db</code> setzt die App zurück.
+          </p>
+        </div>
+        <div class="db-why">
+          <h4>Warum erst connection.commit()?</h4>
+          <p>
+            <code>execute()</code> führt einen Befehl nur aus – die Änderung
+            liegt zunächst in einer Art Zwischenspeicher. Erst
+            <code>commit()</code> schreibt sie in die Datei <code>database.db</code>.
+            Ohne diesen Aufruf wäre die Änderung nach dem Schließen weg.
+          </p>
+        </div>
+        <div class="db-why">
+          <h4>Warum row_factory = sqlite3.Row?</h4>
+          <p>
+            Standardmäßig liefert SQLite Tupel wie <code>('Apfel', 52.0)</code>,
+            also nur Werte in Reihenfolge. Mit <code>Row</code> kann das
+            Ergebnis über den Spaltennamen angesprochen werden:
+            <code>zeile["name"]</code> – lesbarer und unanfällig, wenn sich
+            mal die Spaltenreihenfolge ändert.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         06) Häufige Fragen
+         ====================================================== -->
+    <section class="card db-card fade-in">
+      <div class="card-head">
+        <div>
+          <h2>Häufige Fragen</h2>
+        </div>
+      </div>
+
+      <div class="db-faq">
+        <details>
+          <summary>Was passiert, wenn ich database.db lösche?</summary>
+          <p>
+            Beim nächsten Start legt <code>init_database()</code> die Datei mit
+            beiden leeren Tabellen neu an und trägt eine Startzeile in
+            <code>settings</code> ein (Ziel 2000&nbsp;kcal,
+            <code>goal_set = 0</code>). Das heißt: Es erscheint wieder das
+            Einrichtungs-Formular, alle Mahlzeiten sind weg. Die Datei ist
+            also der komplette Datenbestand – es gibt kein zweites Backup.
+          </p>
+        </details>
+        <details>
+          <summary>Kann ich mir die Datenbank selbst ansehen?</summary>
+          <p>
+            Ja. Im Terminal, im Projektordner:
+            <code>sqlite3 database.db</code>, danach z.&nbsp;B.
+            <code>SELECT * FROM entries;</code> oder
+            <code>.schema</code> für den Aufbau. Änderungen sollten dort
+            allerdings nicht von Hand gemacht werden – dafür ist die App da.
+          </p>
+        </details>
+        <details>
+          <summary>Warum SQLite und keine „echte“ Datenbank wie MySQL?</summary>
+          <p>
+            MySQL oder PostgreSQL brauchen einen eigenen Server, der
+            installiert, gestartet und mit Benutzern und Passwörtern
+            eingerichtet werden muss. Für eine App mit einer Nutzerin und
+            lokal gespeicherten Daten wäre das Overhead. SQLite erledigt
+            dasselbe (echtes SQL, feste Spaltentypen, sichere Zugriffe) –
+            nur als Datei und ohne Adminkram.
+          </p>
+        </details>
+        <details>
+          <summary>Liegt die Datenbank im Internet?</summary>
+          <p>
+            Lokal nein – <code>database.db</code> liegt nur auf deinem
+            Rechner. Auf dem Hosting (Render) liegt sie im Arbeitsordner des
+            Servers und gehört ausschließlich dieser App; andere Seiten haben
+            keinen Zugriff darauf. Ein Zugang per Benutzername/Passwort ist
+            nicht nötig, weil SQLite keine Netzwerk-Schnittstelle hat.
+          </p>
+        </details>
+        <details>
+          <summary>Können zwei Personen gleichzeitig eintragen?</summary>
+          <p>
+            Solange es nur ein oder zwei Einträge pro Minute sind: ja. SQLite
+            sperrt die Datei kurz beim Schreiben. Für echten Mehrbenutzer-Betrieb
+            mit vielen gleichzeitigen Schreibvorgängen bräuchte es einen
+            Server-Datenbank wie MySQL – der Punkt ist hier aber bewusst nicht
+            erreicht.
+          </p>
+        </details>
+      </div>
+
       <p class="db-legend">
-        <strong>Zusammenfassung:</strong> Jeder Lebensmittel-Eintrag ist eine
-        Zeile in <code>entries</code>. Das persönliche Tagesziel steht als
-        einzelne Zeile in <code>settings</code>. Flask liest beide Tabellen mit
-        parametrisierten SQL-Abfragen (Platzhalter <code>?</code>), damit keine
-        SQL-Injection möglich ist.
+        <strong>Kurz zusammengefasst:</strong> Jede Mahlzeit ist eine Zeile in
+        <code>entries</code>, dein Tagesziel steht als einzelne Zeile in
+        <code>settings</code>. Der Python-Code greift immer über die vier
+        Befehle SELECT, INSERT, UPDATE und DELETE auf die Tabellen zu –
+        dabei ausschließlich mit <code>?</code>-Platzhaltern, damit
+        Benutzereingaben niemals als SQL ausgeführt werden können.
       </p>
     </section>
 

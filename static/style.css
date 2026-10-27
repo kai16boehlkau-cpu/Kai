@@ -1753,3 +1753,317 @@ code {
   font-weight: 600;
   line-height: 1.45;
 }
+
+/* ---------- 25) Datenbank-Erklärseite (datenbank.html) ---------- */
+
+/* Abschnittsüberschriften mit vorangestellter Nummer */
+.db-sec { margin-top: 30px; }
+
+.db-sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.db-sec-num {
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--lime);
+  flex-shrink: 0;
+}
+
+.db-sec-head h3 {
+  margin: 0;
+  font-size: 1.22rem;
+  font-weight: 800;
+}
+
+.db-lead {
+  margin: 0 0 14px;
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.db-lead strong { color: var(--text); }
+
+/* Drei Fakten-Kacheln: Was ist SQLite und warum reicht das? */
+.db-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.db-fact {
+  background: rgba(0, 0, 0, 0.30);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+}
+
+.db-fact .fact-tag {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green);
+}
+
+.db-fact h4 { margin: 0 0 6px; font-size: 0.95rem; }
+.db-fact p { margin: 0; font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+/* Fachbegriffe-Kacheln (Primärschlüssel, TEXT, REAL, INTEGER) */
+.db-glossary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* Code-Blöcke im Look eines Editors */
+.codebox {
+  margin: 14px 0;
+  background: #0c0e13;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.codebox-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border-bottom: 1px solid var(--border);
+}
+
+.codebox-dots { display: flex; gap: 5px; }
+.codebox-dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.codebox-file {
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  font-size: 0.74rem;
+  color: var(--muted);
+}
+
+.codebox-lang {
+  margin-left: auto;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
+.codebox pre {
+  margin: 0;
+  padding: 16px 18px;
+  overflow-x: auto;
+  line-height: 1.65;
+}
+
+.codebox pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 0;
+  color: #d5dbe9;
+  font-size: 0.8rem;
+  white-space: pre;
+}
+
+/* Einfache Syntax-Farben – von Hand markiert, kein JavaScript */
+.codebox .kw  { color: #34d399; font-weight: 600; }
+.codebox .str { color: #fbbf24; }
+.codebox .cmt { color: #6d748a; font-style: italic; }
+.codebox .num { color: #60a5fa; }
+.codebox .fn  { color: #a3e635; }
+
+/* Richtig/falsch-Vergleich (z. B. SQL-Injection) */
+.db-cmp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.db-cmp .codebox { margin: 0; }
+.db-cmp .codebox.is-bad  { border-color: rgba(251, 113, 133, 0.55); }
+.db-cmp .codebox.is-good { border-color: rgba(52, 211, 153, 0.55); }
+.db-cmp .codebox.is-bad  .codebox-head { background: rgba(251, 113, 133, 0.10); }
+.db-cmp .codebox.is-good .codebox-head { background: rgba(52, 211, 153, 0.10); }
+
+/* Schritt-für-Schritt-Durchlauf: Nummer + Text + Code */
+.db-steps {
+  display: grid;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+.db-step {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.db-step-num {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--accent);
+  color: #0a0b10;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.db-step h4 { margin: 6px 0 4px; font-size: 1rem; }
+
+.db-step > div > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.db-step .codebox { margin-bottom: 0; }
+
+/* Beispiel-Inhalte der Tabellen (echte Zeilen zum Nachvollziehen) */
+.db-table-scroll { overflow-x: auto; }
+
+.db-data {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.db-data th {
+  text-align: left;
+  padding: 9px 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
+}
+
+.db-data td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  color: var(--text);
+  vertical-align: top;
+}
+
+.db-data tr:last-child td { border-bottom: none; }
+.db-data td.wrap { font-family: var(--font); color: var(--muted); }
+
+/* "Warum?"-Kästchen zu den Design-Entscheidungen */
+.db-why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.db-why {
+  background: rgba(96, 165, 250, 0.07);
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  border-left: 3px solid var(--blue);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 16px;
+}
+
+.db-why h4 { margin: 0 0 6px; font-size: 0.92rem; color: var(--blue); }
+
+.db-why p {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* Spaltenbeschreibungen unter den Feldnamen im Tabellen-Diagramm */
+.db-cols li { display: block; }
+
+.db-col-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.db-desc {
+  display: block;
+  margin-top: 1px;
+  font-size: 0.72rem;
+  color: var(--muted-2);
+  line-height: 1.5;
+}
+
+/* Aufklappbare Fragen am Seitenende */
+.db-faq details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  padding: 0 16px;
+  margin-bottom: 10px;
+}
+
+.db-faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.db-faq summary::-webkit-details-marker { display: none; }
+
+.db-faq summary::after {
+  content: "+";
+  color: var(--lime);
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.db-faq details[open] summary::after { content: "\2013"; }
+
+.db-faq details p {
+  margin: 0 0 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+@media (max-width: 1020px) {
+  .db-fact-grid { grid-template-columns: 1fr; }
+  .db-why-grid { grid-template-columns: 1fr; }
+  .db-glossary { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .db-cmp { grid-template-columns: 1fr; }
+  .db-glossary { grid-template-columns: 1fr; }
+}
